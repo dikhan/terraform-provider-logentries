@@ -1,8 +1,8 @@
 package logentries
 
 import (
-	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/dikhan/logentries_goclient"
+	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -19,11 +19,11 @@ func tagsResource() *schema.Resource {
 			},
 			"sources": {
 				Type:     schema.TypeList,
-				Elem: &schema.Schema{Type:schema.TypeString},
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
 			"actions": {
-				Type:     schema.TypeList,
+				Type: schema.TypeList,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
@@ -71,12 +71,12 @@ func tagsResource() *schema.Resource {
 									},
 									"params_set": {
 										Type:     schema.TypeMap,
-										Elem: &schema.Schema{Type:schema.TypeString},
+										Elem:     &schema.Schema{Type: schema.TypeString},
 										Optional: true,
 									},
 									"alert_content_set": {
 										Type:     schema.TypeMap,
-										Elem: &schema.Schema{Type:schema.TypeString},
+										Elem:     &schema.Schema{Type: schema.TypeString},
 										Optional: true,
 									},
 								},
@@ -87,8 +87,8 @@ func tagsResource() *schema.Resource {
 				Optional: true,
 			},
 			"patterns": {
-				Type: schema.TypeList,
-				Elem: &schema.Schema{Type:schema.TypeString},
+				Type:     schema.TypeList,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
 			"labels": {
@@ -100,7 +100,7 @@ func tagsResource() *schema.Resource {
 			},
 		},
 		Create: createTag,
-		Read:readTag,
+		Read:   readTag,
 		Delete: deleteTag,
 		Update: updateTag,
 	}
@@ -130,12 +130,12 @@ func createTag(data *schema.ResourceData, i interface{}) error {
 	}
 
 	p := logentries_goclient.PostTag{
-		Name: data.Get("name").(string),
-		Type: data.Get("type").(string),
-		Sources: sources,
-		Actions: actions,
+		Name:     data.Get("name").(string),
+		Type:     data.Get("type").(string),
+		Sources:  sources,
+		Actions:  actions,
 		Patterns: patterns,
-		Labels:labels,
+		Labels:   labels,
 	}
 
 	leClient := i.(logentries_goclient.LogEntriesClient)
@@ -157,7 +157,7 @@ func updateTag(data *schema.ResourceData, i interface{}) error {
 }
 
 func deleteTag(data *schema.ResourceData, i interface{}) error {
-	tagId := data.Get("Id").(string)
+	tagId := data.Id()
 	leClient := i.(logentries_goclient.LogEntriesClient)
 	if err := leClient.Tags.DeleteTag(tagId); err != nil {
 		return err

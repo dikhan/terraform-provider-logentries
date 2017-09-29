@@ -1,8 +1,8 @@
-package terraform_provider_logentries
+package main
 
 import (
-	"github.com/hashicorp/terraform/plugin"
 	"github.com/dikhan/terraform-provider-logentries/logentries"
+	"github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/terraform"
 )
 
