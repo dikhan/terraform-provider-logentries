@@ -8,12 +8,12 @@ func labelsSchema() map[string]*schema.Schema{
 			Type:     schema.TypeString,
 			Optional: true,
 		},
-		"sn": {
+		"name": {
 			Type:     schema.TypeString,
 			Optional: true,
 		},
-		"name": {
-			Type:     schema.TypeString,
+		"sn": {
+			Type:     schema.TypeInt,
 			Optional: true,
 		},
 		"color": {
