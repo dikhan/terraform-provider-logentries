@@ -8,6 +8,10 @@ import (
 
 func tagsResource() *schema.Resource {
 	return &schema.Resource{
+		Create: createTag,
+		Read:   readTag,
+		Delete: deleteTag,
+		Update: updateTag,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -99,43 +103,15 @@ func tagsResource() *schema.Resource {
 				Optional: true,
 			},
 		},
-		Create: createTag,
-		Read:   readTag,
-		Delete: deleteTag,
-		Update: updateTag,
 	}
 }
 
 func createTag(data *schema.ResourceData, i interface{}) error {
-
-	var sources []logentries_goclient.PostSource
-	var actions []logentries_goclient.PostAction
+	var p logentries_goclient.PostTag
 	var err error
 
-	patterns := []string{}
-	if err := mapstructure.Decode(data.Get("patterns").([]interface{}), &patterns); err != nil {
+	if p, err = makePostTag(data); err != nil {
 		return err
-	}
-
-	if sources, err = decodeSources(data); err != nil {
-		return err
-	}
-	if actions, err = decodeActions(data); err != nil {
-		return err
-	}
-
-	labels := logentries_goclient.GetLabels{}
-	if err := mapstructure.Decode(data.Get("labels").([]interface{}), &labels); err != nil {
-		return err
-	}
-
-	p := logentries_goclient.PostTag{
-		Name:     data.Get("name").(string),
-		Type:     data.Get("type").(string),
-		Sources:  sources,
-		Actions:  actions,
-		Patterns: patterns,
-		Labels:   labels,
 	}
 
 	leClient := i.(logentries_goclient.LogEntriesClient)
@@ -149,10 +125,66 @@ func createTag(data *schema.ResourceData, i interface{}) error {
 }
 
 func readTag(data *schema.ResourceData, i interface{}) error {
+	leClient := i.(logentries_goclient.LogEntriesClient)
+	tag, err := leClient.Tags.GetTag(data.Id())
+
+	if err != nil {
+		return nil
+	}
+
+	data.Set("name", tag.Name)
+	data.Set("type", tag.Type)
+	var sources []string
+	for _,source := range tag.Sources {
+		sources = append(sources, source.Id)
+	}
+	data.Set("sources", sources)
+
+	actions := []map[string]interface{}{}
+	for _, a := range tag.Actions {
+		action := map[string]interface{}{}
+		action["id"] = a.Id
+		action["type"] = a.Type
+		action["min_report_period"] = a.MinReportPeriod
+		action["min_report_count"] = a.MinReportCount
+		action["min_matches_period"] = a.MinMatchesPeriod
+		action["min_matches_count"] = a.MinMatchesCount
+		action["enabled"] = a.Enabled
+
+		targets := []map[string]interface{}{}
+		for _,t := range a.Targets {
+			target := map[string]interface{}{}
+			target["id"] = t.Id
+			target["type"] = t.Type
+			target["params_set"] = t.ParamsSet
+			target["alert_content_set"] = t.AlertContentSet
+			targets = append(targets, target)
+		}
+		action["targets"] = targets
+		actions = append(actions, action)
+	}
+	data.Set("actions", actions)
+	data.Set("patterns",  tag.Patterns)
+	data.Set("labels", tag.Labels)
+
 	return nil
 }
 
 func updateTag(data *schema.ResourceData, i interface{}) error {
+	var p logentries_goclient.PostTag
+	var err error
+
+	if p, err = makePostTag(data); err != nil {
+		return err
+	}
+
+	leClient := i.(logentries_goclient.LogEntriesClient)
+	tag, err := leClient.Tags.PutTag(data.Id(), p)
+
+	if err != nil {
+		return err
+	}
+	data.SetId(tag.Id)
 	return nil
 }
 
@@ -189,4 +221,37 @@ func decodeSources(data *schema.ResourceData) ([]logentries_goclient.PostSource,
 		decodedSources = append(decodedSources, logentries_goclient.PostSource{source})
 	}
 	return decodedSources, nil
+}
+
+func makePostTag(data *schema.ResourceData) (logentries_goclient.PostTag, error) {
+	var sources []logentries_goclient.PostSource
+	var actions []logentries_goclient.PostAction
+	var err error
+
+	patterns := []string{}
+	if err := mapstructure.Decode(data.Get("patterns").([]interface{}), &patterns); err != nil {
+		return logentries_goclient.PostTag{}, err
+	}
+
+	if sources, err = decodeSources(data); err != nil {
+		return logentries_goclient.PostTag{}, err
+	}
+	if actions, err = decodeActions(data); err != nil {
+		return logentries_goclient.PostTag{}, err
+	}
+
+	labels := logentries_goclient.GetLabels{}
+	if err := mapstructure.Decode(data.Get("labels").([]interface{}), &labels); err != nil {
+		return logentries_goclient.PostTag{}, err
+	}
+
+	p := logentries_goclient.PostTag{
+		Name:     data.Get("name").(string),
+		Type:     data.Get("type").(string),
+		Sources:  sources,
+		Actions:  actions,
+		Patterns: patterns,
+		Labels:   labels,
+	}
+	return p, nil
 }
