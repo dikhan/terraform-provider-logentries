@@ -4,6 +4,7 @@ import (
 	"testing"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	"os"
 )
 
 var testAccProvider *schema.Provider
@@ -23,4 +24,7 @@ func TestLogentriesProvider(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
+	if os.Getenv("LOGENTRIES_API_KEY") != "" {
+		t.Fatalf("err: LOGENTRIES_API_KEY env variable is mandatory to run acceptance tests")
+	}
 }
