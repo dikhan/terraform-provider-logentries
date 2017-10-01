@@ -10,6 +10,7 @@ resource "logentries_tags" "my_tag" {
   sources = ["${var.source_log_id}"]
   labels = [
     {
+      id = "123ab123-d67a-4bd3-38a4-f38a3124TEST"
       name = "my-app-failures"
       color = "ff0000"
       reserved = false
