@@ -49,18 +49,21 @@ $ ls -la terraform-provider-logentries
 In order to test the provider, you can simply run:
 
 ```sh
-$ TF_ACC=1 LOGENTRIES_API_KEY="API_KEY" SOURCE_ID="" LABEL_ID="" go test $(go list ./...) -timeout 120m
+$ TF_ACC=1 LOGENTRIES_API_KEY="API_KEY" SOURCE_ID="LOG_ID" go test $(go list ./...) -timeout 120m -v
 ```
 
 Or specific tests can also be executed as follows:
 
 ```sh
-$ TF_ACC=1 LOGENTRIES_API_KEY="API_KEY" SOURCE_ID="LOG_ID" LABEL_ID="LABEL_ID" go test github.com/dikhan/terraform-provider-logentries/logentries -run  ^TestAccLogentriesTags_Create$ -timeout 120m -v
+$ TF_ACC=1 LOGENTRIES_API_KEY="API_KEY" SOURCE_ID="LOG_ID" go test github.com/dikhan/terraform-provider-logentries/logentries -run  ^TestAccLogentriesTags_Create$ -timeout 120m -v
 ```
 
-The acceptance tests require various LOGENTRIES_API_KEY, SOURCE_ID and LABEL_ID env variables to be set. The env variables
+The acceptance tests require various LOGENTRIES_API_KEY and SOURCE_ID env variables to be set. The env variables
 values will be used within the tests to successfully interact with the log entries api. This values are specific to the
 user and therefore should be passed in.
+
+**Note SOURCE_ID is only required for Tags acceptance tests. However, this will change soon once the log resource is 
+supported too.**
 
 *Note: Acceptance tests create real resources and perform clean up tasks afterwards.*
 

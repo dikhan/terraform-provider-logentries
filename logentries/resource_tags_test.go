@@ -8,12 +8,10 @@ import (
 	"github.com/dikhan/logentries_goclient"
 )
 
+var apiKey = os.Getenv("LOGENTRIES_API_KEY")
 
 const tagsResourceName = "logentries_tags"
 const tagsResourceId = "acceptance_tag"
-
-var sourceId = os.Getenv("SOURCE_ID")
-var labelId = os.Getenv("LABEL_ID")
 
 var tagsResourceStateId = fmt.Sprintf("%s.%s", tagsResourceName, tagsResourceId)
 
@@ -28,6 +26,8 @@ var updatedTagName = "My Update App Failures"
 var updatedTagPatterns = "[error] AND failure and 502"
 var updatedTagActionParamSetDescription = "Log Error description updated"
 
+var sourceId = os.Getenv("SOURCE_ID")
+
 func init() {
 
 	configTemplate := `
@@ -40,15 +40,7 @@ func init() {
 	  type = "Alert"
 	  patterns = ["%s"]
 	  sources = ["%s"]
-	  labels = [
-		{
-		  id = "%s"
-		  name = "logentries_client_label_test"
-		  color = "ff0000"
-		  reserved = false
-		  sn = 2004
-		}
-	  ]
+	  labels = []
 	  actions = [
 		{
 		  type = "Alert"
@@ -74,14 +66,13 @@ func init() {
 	  ]
 	}`
 
-	testTagsCreateConfig = fmt.Sprintf(configTemplate, os.Getenv("LOGENTRIES_API_KEY"), tagsResourceName, tagsResourceId, createTagName, createTagPatterns, sourceId, labelId, createTagActionParamSetDescription)
-	testTagsUpdatedConfig = fmt.Sprintf(configTemplate, os.Getenv("LOGENTRIES_API_KEY"), tagsResourceName, tagsResourceId, updatedTagName, updatedTagPatterns, sourceId, labelId, updatedTagActionParamSetDescription)
+	testTagsCreateConfig = fmt.Sprintf(configTemplate, apiKey, tagsResourceName, tagsResourceId, createTagName, createTagPatterns, sourceId, createTagActionParamSetDescription)
+	testTagsUpdatedConfig = fmt.Sprintf(configTemplate, apiKey, tagsResourceName, tagsResourceId, updatedTagName, updatedTagPatterns, sourceId, updatedTagActionParamSetDescription)
 }
 
 func tagExists() checkExists {
 	return func(leClient logentries_goclient.LogEntriesClient, id string) error {
 		_, err := leClient.Tags.GetTag(id)
-		fmt.Println(err)
 		if err != nil {
 			return err
 		}
@@ -102,15 +93,6 @@ func TestAccLogentriesTags_Create(t *testing.T) {
 					resource.TestCheckResourceAttr(tagsResourceStateId, "type", "Alert"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.#", "1"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.0", createTagPatterns),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "sources.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "sources.0", sourceId),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.id", labelId),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.name", "logentries_client_label_test"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.color", "ff0000"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.reserved", "false"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.sn", "2004"),
-
 					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.#", "1"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.enabled", "true"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_matches_count", "1"),
@@ -146,15 +128,6 @@ func TestAccLogentriesTags_Update(t *testing.T) {
 					resource.TestCheckResourceAttr(tagsResourceStateId, "type", "Alert"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.#", "1"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.0", createTagPatterns),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "sources.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "sources.0", sourceId),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.id", labelId),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.name", "logentries_client_label_test"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.color", "ff0000"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.reserved", "false"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.sn", "2004"),
-
 					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.#", "1"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.enabled", "true"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_matches_count", "1"),
@@ -179,15 +152,6 @@ func TestAccLogentriesTags_Update(t *testing.T) {
 					resource.TestCheckResourceAttr(tagsResourceStateId, "type", "Alert"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.#", "1"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.0", updatedTagPatterns),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "sources.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "sources.0", sourceId),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.id", labelId),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.name", "logentries_client_label_test"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.color", "ff0000"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.reserved", "false"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "labels.0.sn", "2004"),
-
 					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.#", "1"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.enabled", "true"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_matches_count", "1"),
