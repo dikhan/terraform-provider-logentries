@@ -24,7 +24,7 @@ func TestLogentriesProvider(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
-	if os.Getenv("LOGENTRIES_API_KEY") != "" {
+	if os.Getenv("LOGENTRIES_API_KEY") == "" {
 		t.Fatalf("err: LOGENTRIES_API_KEY env variable is mandatory to run acceptance tests")
 	}
 }
