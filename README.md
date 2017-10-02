@@ -30,15 +30,8 @@ $ go build
 Using the provider
 ------------------
 
-Refer to the [examples](https://github.com/dikhan/terraform-provider-logentries/) folder to see how to configure each 
-resource provided by this terraform provider. Once the tf file is populated terraform can be executed as follows:
-
-```
-go build && terraform init && TF_VAR_api_key="API_KEY" terraform plan
-```
-
-The logging level can be configured by specifying TF_LOG="DEBUG" as part of the above command. For more information about
-debugging in terraform refer to this [link](https://www.terraform.io/docs/internals/debugging.html)
+Refer to the READMEs inside the [examples](https://github.com/dikhan/terraform-provider-logentries/examples) folder to 
+see how to configure each resource provided by this terraform provider. 
 
 Developing the Provider
 -----------------------
@@ -59,10 +52,10 @@ In order to test the provider, you can simply run:
 $ TF_ACC=1 LOGENTRIES_API_KEY="API_KEY" SOURCE_ID="" LABEL_ID="" go test $(go list ./...) -timeout 120m
 ```
 
-Or specific test can also be executed as follows:
+Or specific tests can also be executed as follows:
 
 ```sh
-$ TF_ACC=1 LOGENTRIES_API_KEY="API_KEY" SOURCE_ID="LOG_ID" LABEL_ID="LABEL_ID" go test ^TestAccLogentriesTags_Create$ -timeout 120m
+$ TF_ACC=1 LOGENTRIES_API_KEY="API_KEY" SOURCE_ID="LOG_ID" LABEL_ID="LABEL_ID" go test github.com/dikhan/terraform-provider-logentries/logentries -run  ^TestAccLogentriesTags_Create$ -timeout 120m -v
 ```
 
 The acceptance tests require various LOGENTRIES_API_KEY, SOURCE_ID and LABEL_ID env variables to be set. The env variables

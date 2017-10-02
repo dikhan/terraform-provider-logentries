@@ -5,6 +5,3 @@ variable "api_key" {
 variable "pagerduty_key" {
   description = "PagerDuty api key that will be used by logentries to send alets to PagerDuty"
 }
-
-variable "source_log_id" {
-}

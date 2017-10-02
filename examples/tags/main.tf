@@ -7,7 +7,7 @@ resource "logentries_tags" "my_tag" {
   name = "My App Failures"
   type = "Alert"
   patterns = ["[error]"]
-  sources = ["${var.source_log_id}"]
+  sources = ["5a1288ab-561a-4f93-1111-6a38c6d8TEST"]
   labels = [
     {
       id = "123ab123-d67a-4bd3-38a4-f38a3124TEST"
