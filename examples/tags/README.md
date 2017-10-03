@@ -42,7 +42,7 @@ TF_VAR_api_key="YOUR_API_KEY" TF_VAR_pagerduty_key="YOUR_PD_API_KEY"  terraform 
 Upon successful apply completion, go ahead and check that the tag actually exist in logentries:
 
 ```
-curl https://logentries.com/app/<YOUR_ACCOUNT_NUMBER>#/tags/edit/<NEW_TAG_ID>
+curl https://rest.logentries.com/management/tags/<NEW_TAG_ID> -H "x-api-key: <YOUR_API_KEY>" -vv
 ```
 
 ### Destroy Phase
