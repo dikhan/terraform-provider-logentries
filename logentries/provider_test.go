@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+var apiKey = os.Getenv("LOGENTRIES_API_KEY")
+
 var testAccProvider *schema.Provider
 var testAccProviders map[string]terraform.ResourceProvider
 

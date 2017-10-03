@@ -2,13 +2,11 @@ package logentries
 
 import (
 	"testing"
-	resource "github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/helper/resource"
 	"fmt"
 	"os"
 	"github.com/dikhan/logentries_goclient"
 )
-
-var apiKey = os.Getenv("LOGENTRIES_API_KEY")
 
 const tagsResourceName = "logentries_tags"
 const tagsResourceId = "acceptance_tag"
@@ -73,10 +71,7 @@ func init() {
 func tagExists() checkExists {
 	return func(leClient logentries_goclient.LogEntriesClient, id string) error {
 		_, err := leClient.Tags.GetTag(id)
-		if err != nil {
-			return err
-		}
-		return nil
+		return err
 	}
 }
 
@@ -86,7 +81,7 @@ func TestAccLogentriesTags_Create(t *testing.T) {
 		Providers:testAccProviders,
 		CheckDestroy: checkDestroy(tagsResourceStateId, tagExists()),
 		Steps: []resource.TestStep {
-			resource.TestStep{
+			{
 				Config: testTagsCreateConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(tagsResourceStateId, "name", createTagName),
@@ -121,7 +116,7 @@ func TestAccLogentriesTags_Update(t *testing.T) {
 		Providers:testAccProviders,
 		CheckDestroy: checkDestroy(tagsResourceStateId, tagExists()),
 		Steps: []resource.TestStep {
-			resource.TestStep{
+			{
 				Config: testTagsCreateConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(tagsResourceStateId, "name", createTagName),
@@ -145,7 +140,7 @@ func TestAccLogentriesTags_Update(t *testing.T) {
 					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.type", "Alert"),
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testTagsUpdatedConfig,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(tagsResourceStateId, "name", updatedTagName),
