@@ -49,21 +49,40 @@ $ ls -la terraform-provider-logentries
 In order to test the provider, you can simply run:
 
 ```sh
-$ TF_ACC=1 LOGENTRIES_API_KEY="API_KEY" SOURCE_ID="LOG_ID" go test $(go list ./...) -timeout 120m -v
+$ TF_ACC=1 LOGENTRIES_API_KEY="API_KEY" go test $(go list ./...) -timeout 120m -v
+```
+Expected output:
+
+```
+$ TF_ACC=1 LOGENTRIES_API_KEY="<API_KEY>" go test $(go list ./...) -timeout 120m -v
+?       github.com/dikhan/terraform-provider-logentries [no test files]
+=== RUN   TestLogentriesProvider
+--- PASS: TestLogentriesProvider (0.00s)
+=== RUN   TestAccLogentriesLog_Create
+--- PASS: TestAccLogentriesLog_Create (8.81s)
+=== RUN   TestAccLogentriesLog_Update
+--- PASS: TestAccLogentriesLog_Update (11.08s)
+=== RUN   TestAccLogentriesLogSets_Create
+--- PASS: TestAccLogentriesLogSets_Create (0.98s)
+=== RUN   TestAccLogentriesLogSets_Update
+--- PASS: TestAccLogentriesLogSets_Update (1.60s)
+=== RUN   TestAccLogentriesTags_Create
+--- PASS: TestAccLogentriesTags_Create (13.36s)
+=== RUN   TestAccLogentriesTags_Update
+--- PASS: TestAccLogentriesTags_Update (19.71s)
+PASS
+ok      github.com/dikhan/terraform-provider-logentries/logentries      55.636s
+
 ```
 
 Or specific tests can also be executed as follows:
 
 ```sh
-$ TF_ACC=1 LOGENTRIES_API_KEY="API_KEY" SOURCE_ID="LOG_ID" go test github.com/dikhan/terraform-provider-logentries/logentries -run  ^TestAccLogentriesTags_Create$ -timeout 120m -v
+$ TF_ACC=1 LOGENTRIES_API_KEY="<API_KEY>" go test github.com/dikhan/terraform-provider-logentries/logentries -run  ^TestAccLogentriesTags_Create$ -timeout 120m -v
 ```
 
-The acceptance tests require various LOGENTRIES_API_KEY and SOURCE_ID env variables to be set. The env variables
-values will be used within the tests to successfully interact with the log entries api. This values are specific to the
-user and therefore should be passed in.
-
-**Note SOURCE_ID is only required for Tags acceptance tests. However, this will change soon once the log resource is 
-supported too.**
+The acceptance tests require a LOGENTRIES_API_KEY to be set. This env variable value will be used within the tests to 
+successfully interact with the log entries api.
 
 *Note: Acceptance tests create real resources and perform clean up tasks afterwards.*
 

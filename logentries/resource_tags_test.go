@@ -33,11 +33,28 @@ func init() {
 	  api_key = "%s"
 	}
 
+	resource "logentries_logsets" "acceptance_logset" {
+	  name = "Sample LogSet for tag acc tests"
+	  description = "some description goes here"
+	}
+
+	resource "logentries_logs" "acceptance_log" {
+	  name = "Sample Log for tag acc tests"
+	  source_type = "token"
+	  token_seed = ""
+	  structures = []
+	  logsets_info = ["${logentries_logsets.acceptance_logset.id}"]
+	  user_data = {
+	    "le_agent_filename" = "",
+		"le_agent_follow" = "false"
+	  }
+	}
+
 	resource "%s" "%s" {
 	  name = "%s"
 	  type = "Alert"
 	  patterns = ["%s"]
-	  sources = ["%s"]
+	  sources = ["${logentries_logs.acceptance_log.id}"]
 	  labels = []
 	  actions = [
 		{
@@ -64,8 +81,8 @@ func init() {
 	  ]
 	}`
 
-	testTagsCreateConfig = fmt.Sprintf(configTemplate, apiKey, tagsResourceName, tagsResourceId, createTagName, createTagPatterns, sourceId, createTagActionParamSetDescription)
-	testTagsUpdatedConfig = fmt.Sprintf(configTemplate, apiKey, tagsResourceName, tagsResourceId, updatedTagName, updatedTagPatterns, sourceId, updatedTagActionParamSetDescription)
+	testTagsCreateConfig = fmt.Sprintf(configTemplate, apiKey, tagsResourceName, tagsResourceId, createTagName, createTagPatterns, createTagActionParamSetDescription)
+	testTagsUpdatedConfig = fmt.Sprintf(configTemplate, apiKey, tagsResourceName, tagsResourceId, updatedTagName, updatedTagPatterns, updatedTagActionParamSetDescription)
 }
 
 func tagExists() checkExists {

@@ -54,7 +54,6 @@ func init() {
 func logExists() checkExists {
 	return func(leClient logentries_goclient.LogEntriesClient, id string) error {
 		_, _, err := leClient.Logs.GetLog(id)
-		fmt.Println(err)
 		return err
 	}
 }
