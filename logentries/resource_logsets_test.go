@@ -67,7 +67,7 @@ func TestAccLogentriesLogSets_Update(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() { testAccPreCheck(t)},
 		Providers:testAccProviders,
-		CheckDestroy: checkDestroy(logSetsResourceStateId, tagExists()),
+		CheckDestroy: checkDestroy(logSetsResourceStateId, logSetExists()),
 		Steps: []resource.TestStep {
 			{
 				Config: testLogSetsCreateConfig,

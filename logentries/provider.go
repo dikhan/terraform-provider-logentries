@@ -19,6 +19,7 @@ func LogentriesProvider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"logentries_tags": tagsResource(),
 			"logentries_logsets": logSetsResource(),
+			"logentries_logs": logsResource(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
