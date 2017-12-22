@@ -11,7 +11,6 @@ Please check one of the options below and follow the instructions:
 
 - [ ] I have filled out the right section (feature request/bug) and added enough details.
 - [ ] I have added a corresponding label (feature request/bug) to the issue (right side menu)
-- [ ] I have added this issue to the 'API Terraform Provider' GitHub project (right side menu)
 
 ## <a name="featureRequest">Feature Request</a>
 
