@@ -8,7 +8,6 @@ about:
   * [Contributing Code](#contributing-code)
     * [Committing Code](#committing-code)
     * [Coding Standards](#coding-standards)
-  * [Documentation](#documentation)
   
 ## Reporting Issues
 
