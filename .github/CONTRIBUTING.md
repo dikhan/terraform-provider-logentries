@@ -43,15 +43,15 @@ and follow the below:
 
 ## Licensing
 
-Code on the Logentries Provider GitHub repository is licensed under the terms of the MIT license: https://opensource.org/licenses/MIT and [https://github.com/dikhan/terraform-provider-logentries/blob/master/LICENSE]. This license ensures a balance between openness and allowing you to use the code with minimal requirements.
+Code on the (Logentries Terraform Provider GitHub repository)[https://github.com/dikhan/terraform-provider-logentries] is licensed under the terms of the MIT license: https://opensource.org/licenses/MIT and [https://github.com/dikhan/terraform-provider-logentries/blob/master/LICENSE]. This license ensures a balance between openness and allowing you to use the code with minimal requirements.
 
 ## Licensing Code Contributions
 
-All code that you write yourself and contribute to the Terraform Provider GitHub repository must be licensed under the Apache 2.0 license. If you wrote the code as part of work for someone else (like a company), you must ensure that you have the proper rights and permissions to contribute the code under the terms of the Apache 2.0 license.
+All code that you write yourself and contribute to the (Logentries Terraform Provider GitHub repository)[https://github.com/dikhan/terraform-provider-logentries] must be licensed under the Apache 2.0 license. If you wrote the code as part of work for someone else (like a company), you must ensure that you have the proper rights and permissions to contribute the code under the terms of the Apache 2.0 license.
 
 If you want to contribute any code that you did not write yourself (like pre-existing open source code), either alone or in combination with code that you did write, that code must be available under the Apache 2.0, BSD, or MIT license.
 
-If you want to contribute code to the Logentries Provider GitHub repository that is under any different license terms than specified above, please contact [dkhanram@cisco.com] to request a review.
+If you want to contribute code to the (Logentries Terraform Provider GitHub repository)[https://github.com/dikhan/terraform-provider-logentries] that is under any different license terms than specified above, please contact [dkhanram@cisco.com] to request a review.
 
 ### Committing Code
 
