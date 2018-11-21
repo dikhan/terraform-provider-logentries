@@ -1,10 +1,10 @@
 package logentries
 
 import (
-	"testing"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 	"os"
+	"testing"
 )
 
 var apiKey = os.Getenv("LOGENTRIES_API_KEY")
@@ -14,7 +14,7 @@ var testAccProviders map[string]terraform.ResourceProvider
 
 func init() {
 	testAccProvider = LogentriesProvider()
-	testAccProviders = map[string]terraform.ResourceProvider {
+	testAccProviders = map[string]terraform.ResourceProvider{
 		"logentries": testAccProvider,
 	}
 }
