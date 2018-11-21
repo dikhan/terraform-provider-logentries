@@ -17,7 +17,7 @@ func logsResource() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-		    "logsets_info": {
+			"logsets_info": {
 				Type:     schema.TypeList,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
@@ -121,7 +121,7 @@ func updateStateWithRemote(data *schema.ResourceData, log logentries_goclient.Lo
 
 	userData := map[string]string{
 		"le_agent_filename": log.UserData.LogEntriesAgentFileName,
-		"le_agent_follow":log.UserData.LogEntriesAgentFollow,
+		"le_agent_follow":   log.UserData.LogEntriesAgentFollow,
 	}
 	data.Set("user_data", userData)
 }
@@ -150,11 +150,11 @@ func decodeLogSetsInfo(data *schema.ResourceData, fetchRemote bool, client *loge
 
 func decodeUserData(data *schema.ResourceData) (logentries_goclient.LogUserData, error) {
 	var decodedUserData map[string]string
-	if err := mapstructure.Decode(data.Get("user_data").(map[string]interface {}), &decodedUserData); err != nil {
+	if err := mapstructure.Decode(data.Get("user_data").(map[string]interface{}), &decodedUserData); err != nil {
 		return logentries_goclient.LogUserData{}, err
 	}
 	logUserData := logentries_goclient.LogUserData{
-		LogEntriesAgentFollow: decodedUserData["le_agent_follow"],
+		LogEntriesAgentFollow:   decodedUserData["le_agent_follow"],
 		LogEntriesAgentFileName: decodedUserData["le_agent_filename"],
 	}
 	return logUserData, nil
@@ -165,7 +165,7 @@ func makeLog(data *schema.ResourceData) (logentries_goclient.PostLog, error) {
 	var decodedUserData logentries_goclient.LogUserData
 	var err error
 
-	if logSetsInfo, _, err = decodeLogSetsInfo(data,false, nil); err != nil {
+	if logSetsInfo, _, err = decodeLogSetsInfo(data, false, nil); err != nil {
 		return logentries_goclient.PostLog{}, err
 	}
 
@@ -194,7 +194,7 @@ func makePutLog(data *schema.ResourceData, client *logentries_goclient.LogEntrie
 	var decodedUserData logentries_goclient.LogUserData
 	var err error
 
-	if _, logSetsInfo, err = decodeLogSetsInfo(data,true, client); err != nil {
+	if _, logSetsInfo, err = decodeLogSetsInfo(data, true, client); err != nil {
 		return logentries_goclient.PutLog{}, err
 	}
 

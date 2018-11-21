@@ -1,10 +1,10 @@
 package logentries
 
 import (
-	"testing"
-	"github.com/hashicorp/terraform/helper/resource"
 	"fmt"
 	"github.com/dikhan/logentries_goclient"
+	"github.com/hashicorp/terraform/helper/resource"
+	"testing"
 )
 
 const logSetsResourceName = "logentries_logsets"
@@ -48,10 +48,10 @@ func logSetExists() checkExists {
 
 func TestAccLogentriesLogSets_Create(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() { testAccPreCheck(t)},
-		Providers:testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
 		CheckDestroy: checkDestroy(logSetsResourceStateId, logSetExists()),
-		Steps: []resource.TestStep {
+		Steps: []resource.TestStep{
 			{
 				Config: testLogSetsCreateConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -65,10 +65,10 @@ func TestAccLogentriesLogSets_Create(t *testing.T) {
 
 func TestAccLogentriesLogSets_Update(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() { testAccPreCheck(t)},
-		Providers:testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
 		CheckDestroy: checkDestroy(logSetsResourceStateId, logSetExists()),
-		Steps: []resource.TestStep {
+		Steps: []resource.TestStep{
 			{
 				Config: testLogSetsCreateConfig,
 				Check: resource.ComposeTestCheckFunc(

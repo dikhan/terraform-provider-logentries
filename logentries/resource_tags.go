@@ -135,7 +135,7 @@ func readTag(data *schema.ResourceData, i interface{}) error {
 	data.Set("name", tag.Name)
 	data.Set("type", tag.Type)
 	var sources []string
-	for _,source := range tag.Sources {
+	for _, source := range tag.Sources {
 		sources = append(sources, source.Id)
 	}
 	data.Set("sources", sources)
@@ -152,7 +152,7 @@ func readTag(data *schema.ResourceData, i interface{}) error {
 		action["enabled"] = a.Enabled
 
 		targets := []map[string]interface{}{}
-		for _,t := range a.Targets {
+		for _, t := range a.Targets {
 			target := map[string]interface{}{}
 			target["id"] = t.Id
 			target["type"] = t.Type
@@ -164,7 +164,7 @@ func readTag(data *schema.ResourceData, i interface{}) error {
 		actions = append(actions, action)
 	}
 	data.Set("actions", actions)
-	data.Set("patterns",  tag.Patterns)
+	data.Set("patterns", tag.Patterns)
 	data.Set("labels", tag.Labels)
 
 	return nil

@@ -1,17 +1,17 @@
 package logentries
 
 import (
-	"github.com/hashicorp/terraform/terraform"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/dikhan/logentries_goclient"
-	"strings"
 	"fmt"
+	"github.com/dikhan/logentries_goclient"
+	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
+	"strings"
 )
 
 type checkExists func(leClient logentries_goclient.LogEntriesClient, id string) error
 
 func checkDestroy(resourceStateId string, checkExists checkExists) resource.TestCheckFunc {
-	return func (s *terraform.State) error {
+	return func(s *terraform.State) error {
 		leClient := testAccProvider.Meta().(logentries_goclient.LogEntriesClient)
 		if len(s.Modules) != 0 {
 			if s.Modules[0].Resources[resourceStateId] != nil {

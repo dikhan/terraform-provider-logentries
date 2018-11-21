@@ -1,11 +1,11 @@
 package logentries
 
 import (
-	"testing"
-	"github.com/hashicorp/terraform/helper/resource"
 	"fmt"
-	"os"
 	"github.com/dikhan/logentries_goclient"
+	"github.com/hashicorp/terraform/helper/resource"
+	"os"
+	"testing"
 )
 
 const tagsResourceName = "logentries_tags"
@@ -94,10 +94,10 @@ func tagExists() checkExists {
 
 func TestAccLogentriesTags_Create(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() { testAccPreCheck(t)},
-		Providers:testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
 		CheckDestroy: checkDestroy(tagsResourceStateId, tagExists()),
-		Steps: []resource.TestStep {
+		Steps: []resource.TestStep{
 			{
 				Config: testTagsCreateConfig,
 				Check: resource.ComposeTestCheckFunc(
@@ -126,13 +126,12 @@ func TestAccLogentriesTags_Create(t *testing.T) {
 	})
 }
 
-
 func TestAccLogentriesTags_Update(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() { testAccPreCheck(t)},
-		Providers:testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
 		CheckDestroy: checkDestroy(tagsResourceStateId, tagExists()),
-		Steps: []resource.TestStep {
+		Steps: []resource.TestStep{
 			{
 				Config: testTagsCreateConfig,
 				Check: resource.ComposeTestCheckFunc(

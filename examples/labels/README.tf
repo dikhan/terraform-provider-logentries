@@ -1,8 +1,8 @@
-# Logentries - Resource Logs example
+# Logentries - Resource Label example
 
-This example shows how to manage logs in logentries via terraform.
+This example shows how to manage labels in logentries via terraform.
 
-This example would create a logset and a log which will be attached with the previously created logset.
+This example would create a label.
 
 Logentries resource expect the var.api_key to be passed in as env variable.
 

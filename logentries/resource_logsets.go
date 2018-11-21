@@ -140,15 +140,15 @@ func makeLogSet(data *schema.ResourceData) (logentries_goclient.PostLogSet, erro
 		return logentries_goclient.PostLogSet{}, err
 	}
 
-	if err := mapstructure.Decode(data.Get("user_data").(map[string]interface {}), &decodedUserData); err != nil {
+	if err := mapstructure.Decode(data.Get("user_data").(map[string]interface{}), &decodedUserData); err != nil {
 		return logentries_goclient.PostLogSet{}, err
 	}
 
 	p := logentries_goclient.PostLogSet{
-		Name: data.Get("name").(string),
+		Name:        data.Get("name").(string),
 		Description: data.Get("description").(string),
-		UserData: decodedUserData,
-		LogsInfo: logsInfo,
+		UserData:    decodedUserData,
+		LogsInfo:    logsInfo,
 	}
 	return p, nil
 }
@@ -162,7 +162,7 @@ func makePutLogSet(data *schema.ResourceData, client *logentries_goclient.LogEnt
 		return logentries_goclient.PutLogSet{}, err
 	}
 
-	if err := mapstructure.Decode(data.Get("user_data").(map[string]interface {}), &decodedUserData); err != nil {
+	if err := mapstructure.Decode(data.Get("user_data").(map[string]interface{}), &decodedUserData); err != nil {
 		return logentries_goclient.PutLogSet{}, err
 	}
 
