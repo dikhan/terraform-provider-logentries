@@ -8,16 +8,7 @@ resource "logentries_tags" "my_tag" {
   type     = "Alert"
   patterns = ["[error]"]
   sources  = ["5a1288ab-561a-4f93-1111-6a38c6d8TEST"]
-
-  labels = [
-    {
-      id       = "123ab123-d67a-4bd3-38a4-f38a3124TEST"
-      name     = "my-app-failures"
-      color    = "ff0000"
-      reserved = false
-      sn       = 1881
-    },
-  ]
+  labels   = ["123ab123-d67a-4bd3-38a4-f38a3124TEST"]
 
   actions = [
     {

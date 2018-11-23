@@ -96,11 +96,9 @@ func tagsResource() *schema.Resource {
 				Optional: true,
 			},
 			"labels": {
-				Type: schema.TypeList,
-				Elem: &schema.Resource{
-					Schema: labelsSchema(),
-				},
-				Optional: true,
+				Type:     schema.TypeList,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Required: true,
 			},
 		},
 	}
@@ -110,7 +108,7 @@ func createTag(data *schema.ResourceData, i interface{}) error {
 	var p logentries_goclient.PostTag
 	var err error
 
-	if p, err = makePostTag(data); err != nil {
+	if p, err = makePostTag(data, i); err != nil {
 		return err
 	}
 
@@ -174,7 +172,7 @@ func updateTag(data *schema.ResourceData, i interface{}) error {
 	var p logentries_goclient.PostTag
 	var err error
 
-	if p, err = makePostTag(data); err != nil {
+	if p, err = makePostTag(data, i); err != nil {
 		return err
 	}
 
@@ -223,7 +221,7 @@ func decodeSources(data *schema.ResourceData) ([]logentries_goclient.PostSource,
 	return decodedSources, nil
 }
 
-func makePostTag(data *schema.ResourceData) (logentries_goclient.PostTag, error) {
+func makePostTag(data *schema.ResourceData, i interface{}) (logentries_goclient.PostTag, error) {
 	var sources []logentries_goclient.PostSource
 	var actions []logentries_goclient.PostAction
 	var err error
@@ -240,9 +238,15 @@ func makePostTag(data *schema.ResourceData) (logentries_goclient.PostTag, error)
 		return logentries_goclient.PostTag{}, err
 	}
 
+	leClient := i.(logentries_goclient.LogEntriesClient)
 	labels := logentries_goclient.GetLabels{}
-	if err := mapstructure.Decode(data.Get("labels").([]interface{}), &labels); err != nil {
-		return logentries_goclient.PostTag{}, err
+
+	for _, labelIdObject := range data.Get("labels").([]interface{}) {
+		label := logentries_goclient.Label{}
+		if label, err = leClient.Labels.GetLabel(labelIdObject.(string)); err != nil {
+			return logentries_goclient.PostTag{}, err
+		}
+		labels = append(labels, label)
 	}
 
 	p := logentries_goclient.PostTag{
