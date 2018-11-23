@@ -1,6 +1,7 @@
 package logentries
 
 import (
+	"fmt"
 	"github.com/dikhan/logentries_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -10,6 +11,9 @@ func labelsResource() *schema.Resource {
 		Create: createLabel,
 		Read:   readLabel,
 		Delete: deleteLabel,
+		Importer: &schema.ResourceImporter{
+			State: importLabelHelper,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -72,6 +76,23 @@ func deleteLabel(data *schema.ResourceData, i interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func importLabelHelper(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+	name := data.Id()
+	leClient := i.(logentries_goclient.LogEntriesClient)
+	labels, err := leClient.Labels.GetLabels()
+	if err != nil {
+		return nil, err
+	}
+	for _, label := range labels {
+		if label.Name == name {
+			data.SetId(label.Id)
+			readLabel(data, i)
+			return []*schema.ResourceData{data}, nil
+		}
+	}
+	return []*schema.ResourceData{}, fmt.Errorf("No label with name %s found.", name)
 }
 
 func makeLabel(data *schema.ResourceData) (logentries_goclient.PostLabel, error) {

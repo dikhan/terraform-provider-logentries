@@ -1,6 +1,7 @@
 package logentries
 
 import (
+	"fmt"
 	"github.com/dikhan/logentries_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/mitchellh/mapstructure"
@@ -12,6 +13,9 @@ func logSetsResource() *schema.Resource {
 		Read:   readLogSet,
 		Delete: deleteLogSet,
 		Update: updateLogSet,
+		Importer: &schema.ResourceImporter{
+			State: importLogSetHelper,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -51,6 +55,23 @@ func createLogSet(data *schema.ResourceData, i interface{}) error {
 	}
 	data.SetId(logSet.Id)
 	return nil
+}
+
+func importLogSetHelper(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+	name := data.Id()
+	leClient := i.(logentries_goclient.LogEntriesClient)
+	logSets, err := leClient.LogSets.GetLogSets()
+	if err != nil {
+		return nil, err
+	}
+	for _, logSet := range logSets {
+		if logSet.Name == name {
+			data.SetId(logSet.Id)
+			readLogSet(data, i)
+			return []*schema.ResourceData{data}, nil
+		}
+	}
+	return []*schema.ResourceData{}, fmt.Errorf("No logset with name %s found.", name)
 }
 
 func readLogSet(data *schema.ResourceData, i interface{}) error {

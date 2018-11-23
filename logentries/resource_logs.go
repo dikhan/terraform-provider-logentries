@@ -1,9 +1,11 @@
 package logentries
 
 import (
+	"fmt"
 	"github.com/dikhan/logentries_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/mitchellh/mapstructure"
+	"strings"
 )
 
 func logsResource() *schema.Resource {
@@ -12,6 +14,9 @@ func logsResource() *schema.Resource {
 		Read:   readLog,
 		Delete: deleteLog,
 		Update: updateLog,
+		Importer: &schema.ResourceImporter{
+			State: importLogHelper,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -69,6 +74,32 @@ func createLog(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
+func importLogHelper(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+	parts := strings.Split(data.Id(), "/")
+	if len(parts) != 2 {
+		return []*schema.ResourceData{data}, nil
+	}
+	logSetName := parts[0]
+	logName := parts[1]
+
+	leClient := i.(logentries_goclient.LogEntriesClient)
+
+	logs, err := leClient.Logs.GetLogs()
+	if err != nil {
+		return nil, err
+	}
+	for _, log := range logs {
+		for _, logSetInfo := range log.LogsetsInfo {
+			if logSetInfo.Name == logSetName && log.Name == logName {
+				data.SetId(log.Id)
+				readLog(data, i)
+				return []*schema.ResourceData{data}, nil
+			}
+		}
+	}
+	return []*schema.ResourceData{}, fmt.Errorf("No log with name %s in logset %s found.", logName, logSetName)
+}
+
 func readLog(data *schema.ResourceData, i interface{}) error {
 	leClient := i.(logentries_goclient.LogEntriesClient)
 	log, _, err := leClient.Logs.GetLog(data.Id())
@@ -119,9 +150,10 @@ func updateStateWithRemote(data *schema.ResourceData, log logentries_goclient.Lo
 	}
 	data.Set("logsets_info", logSetsInfo)
 
-	userData := map[string]string{
-		"le_agent_filename": log.UserData.LogEntriesAgentFileName,
-		"le_agent_follow":   log.UserData.LogEntriesAgentFollow,
+	userData := map[string]string{}
+	if log.UserData.LogEntriesAgentFileName != "" {
+		userData["le_agent_filename"] = log.UserData.LogEntriesAgentFileName
+		userData["le_agent_follow"] = log.UserData.LogEntriesAgentFollow
 	}
 	data.Set("user_data", userData)
 }
