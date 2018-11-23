@@ -4,6 +4,6 @@ provider "logentries" {
 }
 
 resource "logentries_labels" "my_label" {
-  name        = "My Label"
-  color       = "ff0000"
+  name  = "My Label"
+  color = "ff0000"
 }
