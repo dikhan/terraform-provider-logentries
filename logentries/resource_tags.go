@@ -1,6 +1,7 @@
 package logentries
 
 import (
+	"fmt"
 	"github.com/dikhan/logentries_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/mitchellh/mapstructure"
@@ -12,6 +13,9 @@ func tagsResource() *schema.Resource {
 		Read:   readTag,
 		Delete: deleteTag,
 		Update: updateTag,
+		Importer: &schema.ResourceImporter{
+			State: importTagHelper,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -120,6 +124,23 @@ func createTag(data *schema.ResourceData, i interface{}) error {
 	}
 	data.SetId(tag.Id)
 	return nil
+}
+
+func importTagHelper(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+	name := data.Id()
+	leClient := i.(logentries_goclient.LogEntriesClient)
+	tags, err := leClient.Tags.GetTags()
+	if err != nil {
+		return nil, err
+	}
+	for _, tag := range tags {
+		if tag.Name == name {
+			data.SetId(tag.Id)
+			readTag(data, i)
+			return []*schema.ResourceData{data}, nil
+		}
+	}
+	return []*schema.ResourceData{}, fmt.Errorf("No tag with name %s found.", name)
 }
 
 func readTag(data *schema.ResourceData, i interface{}) error {
