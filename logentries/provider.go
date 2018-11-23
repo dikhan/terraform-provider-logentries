@@ -16,6 +16,9 @@ func LogentriesProvider() *schema.Provider {
 				Description: "Api key (Read/Write) to be able to interact with Logentries REST API",
 			},
 		},
+		DataSourcesMap: map[string]*schema.Resource{
+			"logentries_labels": dataSourceLabels(),
+		},
 		ResourcesMap: map[string]*schema.Resource{
 			"logentries_tags":    tagsResource(),
 			"logentries_logsets": logSetsResource(),
