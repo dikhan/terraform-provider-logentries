@@ -1,14 +1,14 @@
 # Specify the provider and access details
-provider "logentries" {
+provider logentries {
   api_key = "${var.api_key}"
 }
 
-data "logentries_labels" "label" {
+data logentries_labels label {
   name  = "Critical"
   color = "e0e000"
 }
 
-resource "logentries_tags" "my_tag" {
+resource logentries_tags my_tag {
   name     = "My App Failures"
   type     = "Alert"
   patterns = ["[error]"]

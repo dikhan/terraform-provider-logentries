@@ -1,14 +1,14 @@
 # Specify the provider and access details
-provider "logentries" {
+provider logentries {
   api_key = "${var.api_key}"
 }
 
-resource "logentries_logsets" "my_logset" {
+resource logentries_logsets my_logset {
   name        = "My log Set"
   description = "some description goes here"
 }
 
-resource "logentries_logs" "my_log" {
+resource logentries_logs my_log {
   name         = "My super log"
   source_type  = "token"
   token_seed   = ""
