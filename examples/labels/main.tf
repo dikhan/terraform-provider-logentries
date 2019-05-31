@@ -1,9 +1,10 @@
 # Specify the provider and access details
-provider logentries {
+provider insight {
   api_key = "${var.api_key}"
+  region  = "eu"
 }
 
-resource logentries_labels my_label {
+resource insight_labels my_label {
   name  = "My Label"
   color = "ff0000"
 }

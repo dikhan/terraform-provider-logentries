@@ -1,13 +1,13 @@
-package logentries
+package insight
 
 import (
 	"fmt"
-	"github.com/dikhan/logentries_goclient"
+	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/resource"
 	"testing"
 )
 
-const logSetsResourceName = "logentries_logsets"
+const logSetsResourceName = "insight_logsets"
 const logSetsResourceId = "acceptance_logset"
 
 var logSetsResourceStateId = fmt.Sprintf("%s.%s", logSetsResourceName, logSetsResourceId)
@@ -24,7 +24,7 @@ var updatedLogSetDescription = "updated description for the logset"
 func init() {
 
 	configTemplate := `
-	provider "logentries" {
+	provider "insight" {
 	  api_key = "%s"
 	}
 
@@ -40,7 +40,7 @@ func init() {
 }
 
 func logSetExists() checkExists {
-	return func(leClient logentries_goclient.LogEntriesClient, id string) error {
+	return func(leClient insight_goclient.LogEntriesClient, id string) error {
 		_, _, err := leClient.LogSets.GetLogSet(id)
 		return err
 	}

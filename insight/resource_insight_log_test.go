@@ -1,13 +1,13 @@
-package logentries
+package insight
 
 import (
 	"fmt"
-	"github.com/dikhan/logentries_goclient"
+	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/resource"
 	"testing"
 )
 
-const logsResourceName = "logentries_logs"
+const logsResourceName = "insight_logs"
 const logsResourceId = "acceptance_log"
 
 var logResourceStateId = fmt.Sprintf("%s.%s", logsResourceName, logsResourceId)
@@ -26,11 +26,12 @@ var updatedLogAgentFollow = "true"
 func init() {
 
 	configTemplate := `
-	provider "logentries" {
+	provider "insight" {
 	  api_key = "%s"
+		region  = "eu"
 	}
 
-	resource "logentries_logsets" "acceptance_logset" {
+	resource "insight_logsets" "acceptance_logset" {
 	  name = "Acceptance Log Set for log acc tests"
 	  description = "some description goes here"
 	}
@@ -40,7 +41,7 @@ func init() {
 	  source_type = "token"
 	  token_seed = ""
 	  structures = []
-	  logsets_info = ["${logentries_logsets.acceptance_logset.id}"]
+	  logsets_info = ["${insight_logsets.acceptance_logset.id}"]
 	  user_data = {
 	    "le_agent_filename" = "%s",
 		"le_agent_follow" = "%s"
@@ -52,13 +53,13 @@ func init() {
 }
 
 func logExists() checkExists {
-	return func(leClient logentries_goclient.LogEntriesClient, id string) error {
-		_, _, err := leClient.Logs.GetLog(id)
+	return func(client insight_goclient.InsightClient, id string) error {
+		_, _, err := client.Logs.GetLog(id)
 		return err
 	}
 }
 
-func TestAccLogentriesLog_Create(t *testing.T) {
+func TestAccInsightLog_Create(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -78,7 +79,7 @@ func TestAccLogentriesLog_Create(t *testing.T) {
 	})
 }
 
-func TestAccLogentriesLog_Update(t *testing.T) {
+func TestAccInsightLog_Update(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,

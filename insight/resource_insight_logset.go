@@ -1,8 +1,8 @@
-package logentries
+package insight
 
 import (
 	"fmt"
-	"github.com/dikhan/logentries_goclient"
+	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/mitchellh/mapstructure"
 )
@@ -40,14 +40,14 @@ func logSetsResource() *schema.Resource {
 }
 
 func createLogSet(data *schema.ResourceData, i interface{}) error {
-	var p logentries_goclient.PostLogSet
+	var p insight_goclient.PostLogSet
 	var err error
 
 	if p, err = makeLogSet(data); err != nil {
 		return err
 	}
 
-	leClient := i.(logentries_goclient.LogEntriesClient)
+	leClient := i.(insight_goclient.LogEntriesClient)
 	logSet, err := leClient.LogSets.PostLogSet(p)
 
 	if err != nil {
@@ -59,7 +59,7 @@ func createLogSet(data *schema.ResourceData, i interface{}) error {
 
 func importLogSetHelper(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
 	name := data.Id()
-	leClient := i.(logentries_goclient.LogEntriesClient)
+	leClient := i.(insight_goclient.LogEntriesClient)
 	logSets, err := leClient.LogSets.GetLogSets()
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func importLogSetHelper(data *schema.ResourceData, i interface{}) ([]*schema.Res
 }
 
 func readLogSet(data *schema.ResourceData, i interface{}) error {
-	leClient := i.(logentries_goclient.LogEntriesClient)
+	leClient := i.(insight_goclient.LogEntriesClient)
 	logSet, _, err := leClient.LogSets.GetLogSet(data.Id())
 
 	if err != nil {
@@ -105,10 +105,10 @@ func readLogSet(data *schema.ResourceData, i interface{}) error {
 }
 
 func updateLogSet(data *schema.ResourceData, i interface{}) error {
-	var p logentries_goclient.PutLogSet
+	var p insight_goclient.PutLogSet
 	var err error
 
-	leClient := i.(logentries_goclient.LogEntriesClient)
+	leClient := i.(insight_goclient.LogEntriesClient)
 	if p, err = makePutLogSet(data, &leClient); err != nil {
 		return err
 	}
@@ -123,21 +123,21 @@ func updateLogSet(data *schema.ResourceData, i interface{}) error {
 
 func deleteLogSet(data *schema.ResourceData, i interface{}) error {
 	logSetId := data.Id()
-	leClient := i.(logentries_goclient.LogEntriesClient)
+	leClient := i.(insight_goclient.LogEntriesClient)
 	if err := leClient.LogSets.DeleteLogSet(logSetId); err != nil {
 		return err
 	}
 	return nil
 }
 
-func decodeLogsInfo(data *schema.ResourceData, fetchRemote bool, client *logentries_goclient.LogEntriesClient) ([]logentries_goclient.PostLogInfo, []logentries_goclient.LogInfo, error) {
+func decodeLogsInfo(data *schema.ResourceData, fetchRemote bool, client *insight_goclient.LogEntriesClient) ([]insight_goclient.PostLogInfo, []insight_goclient.LogInfo, error) {
 	logsInfo := []string{}
 	if err := mapstructure.Decode(data.Get("logs_info").([]interface{}), &logsInfo); err != nil {
 		return nil, nil, err
 	}
 
-	decodedLogsInfo := []logentries_goclient.LogInfo{}
-	decodedPostLogsInfo := []logentries_goclient.PostLogInfo{}
+	decodedLogsInfo := []insight_goclient.LogInfo{}
+	decodedPostLogsInfo := []insight_goclient.PostLogInfo{}
 	for _, logId := range logsInfo {
 		if fetchRemote {
 			_, logInfo, err := client.Logs.GetLog(logId)
@@ -146,26 +146,26 @@ func decodeLogsInfo(data *schema.ResourceData, fetchRemote bool, client *logentr
 			}
 			decodedLogsInfo = append(decodedLogsInfo, logInfo)
 		} else {
-			decodedPostLogsInfo = append(decodedPostLogsInfo, logentries_goclient.PostLogInfo{logId})
+			decodedPostLogsInfo = append(decodedPostLogsInfo, insight_goclient.PostLogInfo{logId})
 		}
 	}
 	return decodedPostLogsInfo, decodedLogsInfo, nil
 }
 
-func makeLogSet(data *schema.ResourceData) (logentries_goclient.PostLogSet, error) {
-	var logsInfo []logentries_goclient.PostLogInfo
+func makeLogSet(data *schema.ResourceData) (insight_goclient.PostLogSet, error) {
+	var logsInfo []insight_goclient.PostLogInfo
 	var decodedUserData map[string]string
 	var err error
 
 	if logsInfo, _, err = decodeLogsInfo(data, false, nil); err != nil {
-		return logentries_goclient.PostLogSet{}, err
+		return insight_goclient.PostLogSet{}, err
 	}
 
 	if err := mapstructure.Decode(data.Get("user_data").(map[string]interface{}), &decodedUserData); err != nil {
-		return logentries_goclient.PostLogSet{}, err
+		return insight_goclient.PostLogSet{}, err
 	}
 
-	p := logentries_goclient.PostLogSet{
+	p := insight_goclient.PostLogSet{
 		Name:        data.Get("name").(string),
 		Description: data.Get("description").(string),
 		UserData:    decodedUserData,
@@ -174,20 +174,20 @@ func makeLogSet(data *schema.ResourceData) (logentries_goclient.PostLogSet, erro
 	return p, nil
 }
 
-func makePutLogSet(data *schema.ResourceData, client *logentries_goclient.LogEntriesClient) (logentries_goclient.PutLogSet, error) {
-	var decodedLogsInfo []logentries_goclient.LogInfo
+func makePutLogSet(data *schema.ResourceData, client *insight_goclient.LogEntriesClient) (insight_goclient.PutLogSet, error) {
+	var decodedLogsInfo []insight_goclient.LogInfo
 	var decodedUserData map[string]string
 	var err error
 
 	if _, decodedLogsInfo, err = decodeLogsInfo(data, true, client); err != nil {
-		return logentries_goclient.PutLogSet{}, err
+		return insight_goclient.PutLogSet{}, err
 	}
 
 	if err := mapstructure.Decode(data.Get("user_data").(map[string]interface{}), &decodedUserData); err != nil {
-		return logentries_goclient.PutLogSet{}, err
+		return insight_goclient.PutLogSet{}, err
 	}
 
-	p := logentries_goclient.PutLogSet{
+	p := insight_goclient.PutLogSet{
 		Name:        data.Get("name").(string),
 		Description: data.Get("description").(string),
 		UserData:    decodedUserData,

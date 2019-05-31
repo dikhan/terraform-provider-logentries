@@ -1,16 +1,16 @@
-package logentries
+package insight
 
 import (
 	"fmt"
-	"github.com/dikhan/logentries_goclient"
+	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/resource"
 	"testing"
 )
 
-const labelsResourceName = "logentries_labels"
-const labelsResourceId = "acceptance_label"
+const labelResourceName = "insight_label"
+const labelResourceId = "acceptance_label"
 
-var labelResourceStateId = fmt.Sprintf("%s.%s", labelsResourceName, labelsResourceId)
+var labelResourceStateId = fmt.Sprintf("%s.%s", labelResourceName, labelResourceId)
 
 var testLabelCreateConfig string
 
@@ -20,7 +20,7 @@ var createLabelColor = "ff0000"
 func init() {
 
 	configTemplate := `
-   provider "logentries" {
+   provider "insight" {
      api_key = "%s"
    }
 
@@ -29,17 +29,17 @@ func init() {
      color = "%s"
    }`
 
-	testLabelCreateConfig = fmt.Sprintf(configTemplate, apiKey, labelsResourceName, labelsResourceId, createLabelName, createLabelColor)
+	testLabelCreateConfig = fmt.Sprintf(configTemplate, apiKey, labelResourceName, labelResourceId, createLabelName, createLabelColor)
 }
 
 func labelExists() checkExists {
-	return func(leClient logentries_goclient.LogEntriesClient, id string) error {
+	return func(leClient insight_goclient.InsightClient, id string) error {
 		_, err := leClient.Labels.GetLabel(id)
 		return err
 	}
 }
 
-func TestAccLogentriesLabel_Create(t *testing.T) {
+func TestAccInsightLabel_Create(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,

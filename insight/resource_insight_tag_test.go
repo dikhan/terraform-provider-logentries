@@ -1,14 +1,14 @@
-package logentries
+package insight
 
 import (
 	"fmt"
-	"github.com/dikhan/logentries_goclient"
+	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/resource"
 	"os"
 	"testing"
 )
 
-const tagsResourceName = "logentries_tags"
+const tagsResourceName = "insight_tags"
 const tagsResourceId = "acceptance_tag"
 
 var tagsResourceStateId = fmt.Sprintf("%s.%s", tagsResourceName, tagsResourceId)
@@ -29,21 +29,21 @@ var sourceId = os.Getenv("SOURCE_ID")
 func init() {
 
 	configTemplate := `
-	provider "logentries" {
+	provider "insight" {
 	  api_key = "%s"
 	}
 
-	resource "logentries_logsets" "acceptance_logset" {
+	resource "insight_logsets" "acceptance_logset" {
 	  name = "Sample LogSet for tag acc tests"
 	  description = "some description goes here"
 	}
 
-	resource "logentries_logs" "acceptance_log" {
+	resource "insight_logs" "acceptance_log" {
 	  name = "Sample Log for tag acc tests"
 	  source_type = "token"
 	  token_seed = ""
 	  structures = []
-	  logsets_info = ["${logentries_logsets.acceptance_logset.id}"]
+	  logsets_info = ["${insight_logsets.acceptance_logset.id}"]
 	  user_data = {
 	    "le_agent_filename" = "",
 		"le_agent_follow" = "false"
@@ -54,7 +54,7 @@ func init() {
 	  name = "%s"
 	  type = "Alert"
 	  patterns = ["%s"]
-	  sources = ["${logentries_logs.acceptance_log.id}"]
+	  sources = ["${insight_logs.acceptance_log.id}"]
 	  labels = []
 	  actions = [
 		{
@@ -86,7 +86,7 @@ func init() {
 }
 
 func tagExists() checkExists {
-	return func(leClient logentries_goclient.LogEntriesClient, id string) error {
+	return func(leClient insight_goclient.LogEntriesClient, id string) error {
 		_, err := leClient.Tags.GetTag(id)
 		return err
 	}

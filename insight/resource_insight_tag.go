@@ -1,20 +1,20 @@
-package logentries
+package insight
 
 import (
 	"fmt"
-	"github.com/dikhan/logentries_goclient"
+	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/mitchellh/mapstructure"
 )
 
-func tagsResource() *schema.Resource {
+func resourceInsightTag() *schema.Resource {
 	return &schema.Resource{
-		Create: createTag,
-		Read:   readTag,
-		Delete: deleteTag,
-		Update: updateTag,
+		Create: resourceInsightTagCreate,
+		Read:   resourceInsightTagRead,
+		Delete: resourceInsightTagDelete,
+		Update: resourceInsightTagUpdate,
 		Importer: &schema.ResourceImporter{
-			State: importTagHelper,
+			State: resourceInsightTagImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -26,81 +26,22 @@ func tagsResource() *schema.Resource {
 				Optional: true,
 			},
 			"sources": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
-			"actions": {
-				Type: schema.TypeList,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"id": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
-						},
-						"min_matches_count": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"min_report_count": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"min_matches_period": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"min_report_period": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"enabled": {
-							Type:     schema.TypeBool,
-							Optional: true,
-						},
-						"type": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"targets": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"id": {
-										Type:     schema.TypeString,
-										Optional: true,
-										Computed: true,
-									},
-									"type": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
-									"params_set": {
-										Type:     schema.TypeMap,
-										Elem:     &schema.Schema{Type: schema.TypeString},
-										Optional: true,
-									},
-									"alert_content_set": {
-										Type:     schema.TypeMap,
-										Elem:     &schema.Schema{Type: schema.TypeString},
-										Optional: true,
-									},
-								},
-							},
-						},
-					},
-				},
+			"action_ids": {
+				Type:     schema.TypeSet,
 				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"patterns": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
 			"labels": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Required: true,
 			},
@@ -108,15 +49,15 @@ func tagsResource() *schema.Resource {
 	}
 }
 
-func createTag(data *schema.ResourceData, i interface{}) error {
-	var p logentries_goclient.PostTag
+func resourceInsightTagCreate(data *schema.ResourceData, i interface{}) error {
+	var p insight_goclient.PostTag
 	var err error
 
 	if p, err = makePostTag(data, i); err != nil {
 		return err
 	}
 
-	leClient := i.(logentries_goclient.LogEntriesClient)
+	leClient := i.(insight_goclient.LogEntriesClient)
 	tag, err := leClient.Tags.PostTag(p)
 
 	if err != nil {
@@ -126,9 +67,9 @@ func createTag(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func importTagHelper(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+func resourceInsightTagImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
 	name := data.Id()
-	leClient := i.(logentries_goclient.LogEntriesClient)
+	leClient := i.(insight_goclient.LogEntriesClient)
 	tags, err := leClient.Tags.GetTags()
 	if err != nil {
 		return nil, err
@@ -143,8 +84,8 @@ func importTagHelper(data *schema.ResourceData, i interface{}) ([]*schema.Resour
 	return []*schema.ResourceData{}, fmt.Errorf("No tag with name %s found.", name)
 }
 
-func readTag(data *schema.ResourceData, i interface{}) error {
-	leClient := i.(logentries_goclient.LogEntriesClient)
+func resourceInsightTagRead(data *schema.ResourceData, i interface{}) error {
+	leClient := i.(insight_goclient.LogEntriesClient)
 	tag, err := leClient.Tags.GetTag(data.Id())
 
 	if err != nil {
@@ -189,15 +130,15 @@ func readTag(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func updateTag(data *schema.ResourceData, i interface{}) error {
-	var p logentries_goclient.PostTag
+func resourceInsightTagUpdate(data *schema.ResourceData, i interface{}) error {
+	var p insight_goclient.PostTag
 	var err error
 
 	if p, err = makePostTag(data, i); err != nil {
 		return err
 	}
 
-	leClient := i.(logentries_goclient.LogEntriesClient)
+	leClient := i.(insight_goclient.LogEntriesClient)
 	tag, err := leClient.Tags.PutTag(data.Id(), p)
 
 	if err != nil {
@@ -207,20 +148,20 @@ func updateTag(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func deleteTag(data *schema.ResourceData, i interface{}) error {
+func resourceInsightTagDelete(data *schema.ResourceData, i interface{}) error {
 	tagId := data.Id()
-	leClient := i.(logentries_goclient.LogEntriesClient)
+	leClient := i.(insight_goclient.LogEntriesClient)
 	if err := leClient.Tags.DeleteTag(tagId); err != nil {
 		return err
 	}
 	return nil
 }
 
-func decodeActions(data *schema.ResourceData) ([]logentries_goclient.PostAction, error) {
-	actions := []logentries_goclient.PostAction{}
+func decodeActions(data *schema.ResourceData) ([]insight_goclient.PostAction, error) {
+	actions := []insight_goclient.PostAction{}
 	if attr, ok := data.Get("actions").([]interface{}); ok {
 		for _, v := range attr {
-			action := &logentries_goclient.PostAction{}
+			action := &insight_goclient.PostAction{}
 			if err := mapstructure.Decode(v, action); err != nil {
 				return nil, err
 			}
@@ -230,47 +171,47 @@ func decodeActions(data *schema.ResourceData) ([]logentries_goclient.PostAction,
 	return actions, nil
 }
 
-func decodeSources(data *schema.ResourceData) ([]logentries_goclient.PostSource, error) {
+func decodeSources(data *schema.ResourceData) ([]insight_goclient.PostSource, error) {
 	sources := []string{}
 	if err := mapstructure.Decode(data.Get("sources").([]interface{}), &sources); err != nil {
 		return nil, err
 	}
-	decodedSources := []logentries_goclient.PostSource{}
+	decodedSources := []insight_goclient.PostSource{}
 	for _, source := range sources {
-		decodedSources = append(decodedSources, logentries_goclient.PostSource{source})
+		decodedSources = append(decodedSources, insight_goclient.PostSource{source})
 	}
 	return decodedSources, nil
 }
 
-func makePostTag(data *schema.ResourceData, i interface{}) (logentries_goclient.PostTag, error) {
-	var sources []logentries_goclient.PostSource
-	var actions []logentries_goclient.PostAction
+func makePostTag(data *schema.ResourceData, i interface{}) (insight_goclient.PostTag, error) {
+	var sources []insight_goclient.PostSource
+	var actions []insight_goclient.PostAction
 	var err error
 
 	patterns := []string{}
 	if err := mapstructure.Decode(data.Get("patterns").([]interface{}), &patterns); err != nil {
-		return logentries_goclient.PostTag{}, err
+		return insight_goclient.PostTag{}, err
 	}
 
 	if sources, err = decodeSources(data); err != nil {
-		return logentries_goclient.PostTag{}, err
+		return insight_goclient.PostTag{}, err
 	}
 	if actions, err = decodeActions(data); err != nil {
-		return logentries_goclient.PostTag{}, err
+		return insight_goclient.PostTag{}, err
 	}
 
-	leClient := i.(logentries_goclient.LogEntriesClient)
-	labels := logentries_goclient.GetLabels{}
+	leClient := i.(insight_goclient.LogEntriesClient)
+	labels := insight_goclient.GetLabels{}
 
 	for _, labelIdObject := range data.Get("labels").([]interface{}) {
-		label := logentries_goclient.Label{}
+		label := insight_goclient.Label{}
 		if label, err = leClient.Labels.GetLabel(labelIdObject.(string)); err != nil {
-			return logentries_goclient.PostTag{}, err
+			return insight_goclient.PostTag{}, err
 		}
 		labels = append(labels, label)
 	}
 
-	p := logentries_goclient.PostTag{
+	p := insight_goclient.PostTag{
 		Name:     data.Get("name").(string),
 		Type:     data.Get("type").(string),
 		Sources:  sources,

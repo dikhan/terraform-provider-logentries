@@ -1,19 +1,20 @@
 # Specify the provider and access details
-provider logentries {
+provider insight {
   api_key = "${var.api_key}"
+  region  = "eu"
 }
 
-resource logentries_logsets my_logset {
+resource insight_logsets my_logset {
   name        = "My log Set"
   description = "some description goes here"
 }
 
-resource logentries_logs my_log {
+resource insight_logs my_log {
   name         = "My super log"
   source_type  = "token"
   token_seed   = ""
   structures   = []
-  logsets_info = ["${logentries_logsets.my_logset.id}"]
+  logsets_info = ["${insight_logsets.my_logset.id}"]
 
   user_data = {
     "le_agent_filename" = "/var/log/anaconda.log"
