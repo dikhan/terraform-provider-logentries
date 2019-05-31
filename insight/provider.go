@@ -30,6 +30,8 @@ func InsightProvider() *schema.Provider {
 			"insight_logset": resourceInsightLogset(),
 			"insight_log":    resourceInsightLog(),
 			"insight_label":  resourceInsightLabel(),
+			"insight_action": resourceInsightAction(),
+			"insight_target": resourceInsightTarget(),
 		},
 		ConfigureFunc: providerConfigure,
 	}

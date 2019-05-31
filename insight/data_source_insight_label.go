@@ -2,8 +2,6 @@ package insight
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -32,14 +30,14 @@ func dataSourceLabelRead(data *schema.ResourceData, meta interface{}) error {
 	client := meta.(*insight_goclient.InsightClient)
 	name := data.Get("name")
 	color := data.Get("color")
-	labels, err := client.GetLabelsByName(name)
+	labels, err := client.GetLabelsByName(name, color)
 	if err != nil {
 		return err
 	}
-	if len(labels) == 0 {
+	if len(*labels) == 0 {
 		return fmt.Errorf("No label with name %s found.", name)
 	}
-	if len(labels) > 1 {
+	if len(*labels) > 1 {
 		return fmt.Errorf("Multiple topics with name %s found. Please use color to get a valid label", name)
 	}
 	data.SetId(labels[0].Id)

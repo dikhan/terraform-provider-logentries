@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/mitchellh/mapstructure"
-	"strings"
 )
 
 func resourceInsightLog() *schema.Resource {
@@ -19,9 +17,10 @@ func resourceInsightLog() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"logset_id": {
-				Type:     schema.TypeString,
-				Required: true,
+			"logset_ids": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
 			},
 			"source_type": {
 				Type:     schema.TypeString,
@@ -32,13 +31,13 @@ func resourceInsightLog() *schema.Resource {
 				Optional: true,
 			},
 			"tokens": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 				Computed: true,
 			},
 			"structures": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
@@ -51,195 +50,86 @@ func resourceInsightLog() *schema.Resource {
 	}
 }
 
-func resourceInsightLog(data *schema.ResourceData, meta interface{}) error {
-	client := meta.(*insight_goclient.InsightClient)
-	resp, err := client.PostLog(log)
+func resourceInsightLogCreate(data *schema.ResourceData, i interface{}) error {
+	client := i.(insight_goclient.InsightClient)
+	log, err := getInsightLogFromData(data)
 	if err != nil {
 		return err
 	}
-	data.Set("tokens", log.Tokens)
-	data.SetId(log.Id)
-	return nil
+	if err = client.PostLog(&log); err != nil {
+		return err
+	}
+	if err = setInsightLogData(data, log); err != nil {
+		return err
+	}
+	return resourceInsightLogRead(data, i)
 }
 
-func importLogHelper(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
-	parts := strings.Split(data.Id(), "/")
-	if len(parts) != 2 {
-		return []*schema.ResourceData{data}, nil
-	}
-	logSetName := parts[0]
-	logName := parts[1]
-
-	leClient := i.(insight_goclient.InsightClient)
-
-	logs, err := client.GetLogs()
-	if err != nil {
-		return nil, err
-	}
-	for _, log := range logs {
-		for _, logsetInfo := range log.LogsetsInfo {
-			if logsetInfo.Name == logSetName && log.Name == logName {
-				data.SetId(log.Id)
-				readLog(data, i)
-				return []*schema.ResourceData{data}, nil
-			}
-		}
-	}
-	return []*schema.ResourceData{}, fmt.Errorf("No log with name %s in logset %s found.", logName, logSetName)
+func resourceInsightLogImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+	return []*schema.ResourceData{d}, nil
 }
 
-func readLog(data *schema.ResourceData, i interface{}) error {
+func resourceInsightLogRead(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	log, _, err := client.Logs.GetLog(data.Id())
-
+	log, err := client.GetLog(data.Id())
 	if err != nil {
 		return nil
 	}
-	updateStateWithRemote(data, log)
+	if err = setInsightLogData(data, log); err != nil {
+		return err
+	}
 	return nil
 }
 
-func updateLog(data *schema.ResourceData, i interface{}) error {
-	var p insight_goclient.PutLog
-	var err error
-
-	leClient := i.(insight_goclient.InsightClient)
-	if p, err = makePutLog(data, &leClient); err != nil {
-		return err
-	}
-
-	log, err := leClient.Logs.PutLog(data.Id(), p)
+func resourceInsightLogUpdate(data *schema.ResourceData, i interface{}) error {
+	client := i.(insight_goclient.InsightClient)
+	log, err := getInsightLogFromData(data)
 	if err != nil {
 		return err
 	}
-	data.SetId(log.Id)
-	return nil
-}
-
-func deleteLog(data *schema.ResourceData, i interface{}) error {
-	logId := data.Id()
-	leClient := i.(insight_goclient.LogEntriesClient)
-	if err := leClient.Logs.DeleteLog(logId); err != nil {
+	if err = client.PutLog(&log); err != nil {
+		return err
+	}
+	if err = setInsightLogData(data, log); err != nil {
 		return err
 	}
 	return nil
 }
 
-func updateStateWithRemote(data *schema.ResourceData, log insight_goclient.Log) {
+func resourceInsightLogDelete(data *schema.ResourceData, i interface{}) error {
+	logId := data.Id()
+	client := i.(insight_goclient.InsightClient)
+	if err := client.DeleteLog(logId); err != nil {
+		return err
+	}
+	return nil
+}
+
+func getInsightLogFromData(data *schema.ResourceData) *insight_goclient.Log {
+	return &insight_goclient.Log{
+		Id:          data.Id(),
+		SourceType:  data.Get("source_type").(string),
+		Name:        data.Get("name").(string),
+		TokenSeed:   data.Get("token_seed").(string),
+		Tokens:      data.Get("tokens").([]string),
+		Structures:  data.Get("structures").([]string),
+		LogsetsInfo: data.Get("logset_ids").([]string),
+		UserData:    data.Get("user_data").(map[string]string),
+	}
+}
+
+func setInsightLogData(data *schema.ResourceData, log *insight_goclient.Log) error {
+	var logsets []string
+	for _, logset := range log.LogsetsInfo {
+		logsets := append(logsets, logset.Id)
+	}
+	data.SetId(log.Id)
 	data.Set("name", log.Name)
 	data.Set("source_type", log.SourceType)
 	data.Set("token_seed", log.TokenSeed)
-	data.Set("structures", log.Structures)
 	data.Set("tokens", log.Tokens)
-
-	var logSetsInfo []string
-	for _, logSetInfo := range log.LogsetsInfo {
-		logSetsInfo = append(logSetsInfo, logSetInfo.Id)
-	}
-	data.Set("logsets_info", logSetsInfo)
-
-	userData := map[string]string{}
-	if log.UserData.LogEntriesAgentFileName != "" {
-		userData["le_agent_filename"] = log.UserData.LogEntriesAgentFileName
-		userData["le_agent_follow"] = log.UserData.LogEntriesAgentFollow
-	}
-	data.Set("user_data", userData)
-}
-
-func decodeLogSetsInfo(data *schema.ResourceData, fetchRemote bool, client *insight_goclient.LogEntriesClient) ([]insight_goclient.PostLogSetInfo, []insight_goclient.LogSetInfo, error) {
-	logsInfo := []string{}
-	if err := mapstructure.Decode(data.Get("logsets_info").([]interface{}), &logsInfo); err != nil {
-		return nil, nil, err
-	}
-
-	decodedLogSetsInfo := []insight_goclient.LogSetInfo{}
-	decodedPostLogSetsInfo := []insight_goclient.PostLogSetInfo{}
-	for _, logId := range logsInfo {
-		if fetchRemote {
-			_, logSet, err := client.LogSets.GetLogSet(logId)
-			if err != nil {
-				return nil, nil, err
-			}
-			decodedLogSetsInfo = append(decodedLogSetsInfo, logSet)
-		} else {
-			decodedPostLogSetsInfo = append(decodedPostLogSetsInfo, insight_goclient.PostLogSetInfo{logId})
-		}
-	}
-	return decodedPostLogSetsInfo, decodedLogSetsInfo, nil
-}
-
-func decodeUserData(data *schema.ResourceData) (insight_goclient.LogUserData, error) {
-	var decodedUserData map[string]string
-	if err := mapstructure.Decode(data.Get("user_data").(map[string]interface{}), &decodedUserData); err != nil {
-		return insight_goclient.LogUserData{}, err
-	}
-	logUserData := insight_goclient.LogUserData{
-		LogEntriesAgentFollow:   decodedUserData["le_agent_follow"],
-		LogEntriesAgentFileName: decodedUserData["le_agent_filename"],
-	}
-	return logUserData, nil
-}
-
-func makeLog(data *schema.ResourceData) (insight_goclient.PostLog, error) {
-	var logSetsInfo []insight_goclient.PostLogSetInfo
-	var decodedUserData insight_goclient.LogUserData
-	var err error
-
-	if logSetsInfo, _, err = decodeLogSetsInfo(data, false, nil); err != nil {
-		return insight_goclient.PostLog{}, err
-	}
-
-	structures := []string{}
-	if err := mapstructure.Decode(data.Get("structures").([]interface{}), &structures); err != nil {
-		return insight_goclient.PostLog{}, err
-	}
-
-	if decodedUserData, err = decodeUserData(data); err != nil {
-		return insight_goclient.PostLog{}, err
-	}
-
-	p := insight_goclient.PostLog{
-		Name:        data.Get("name").(string),
-		SourceType:  data.Get("source_type").(string),
-		TokenSeed:   data.Get("token_seed").(string),
-		Structures:  structures,
-		LogsetsInfo: logSetsInfo,
-		UserData:    decodedUserData,
-	}
-	return p, nil
-}
-
-func makePutLog(data *schema.ResourceData, client *insight_goclient.LogEntriesClient) (insight_goclient.PutLog, error) {
-	var logSetsInfo []insight_goclient.LogSetInfo
-	var decodedUserData insight_goclient.LogUserData
-	var err error
-
-	if _, logSetsInfo, err = decodeLogSetsInfo(data, true, client); err != nil {
-		return insight_goclient.PutLog{}, err
-	}
-
-	tokens := []string{}
-	if err := mapstructure.Decode(data.Get("tokens").([]interface{}), &tokens); err != nil {
-		return insight_goclient.PutLog{}, err
-	}
-
-	structures := []string{}
-	if err := mapstructure.Decode(data.Get("structures").([]interface{}), &structures); err != nil {
-		return insight_goclient.PutLog{}, err
-	}
-
-	if decodedUserData, err = decodeUserData(data); err != nil {
-		return insight_goclient.PutLog{}, err
-	}
-
-	p := insight_goclient.PutLog{
-		Name:        data.Get("name").(string),
-		Tokens:      tokens,
-		SourceType:  data.Get("source_type").(string),
-		TokenSeed:   data.Get("token_seed").(string),
-		Structures:  structures,
-		LogsetsInfo: logSetsInfo,
-		UserData:    decodedUserData,
-	}
-	return p, nil
+	data.Set("user_data", log.UserData)
+	data.Set("structures", log.Structures)
+	data.Set("logset_ids", logsets)
+	return nil
 }

@@ -1,11 +1,9 @@
 package insight
 
 import (
-	"fmt"
 	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
-	"github.com/mitchellh/mapstructure"
 )
 
 var actionPeriods = []string{

@@ -131,7 +131,7 @@ func getInsightTargetFromData(data *schema.ResourceData) *insight_goclient.Targe
 func setInsightTargetData(data *schema.ResourceData, target *insight_goclient.Target) error {
 	data.SetId(target.Id)
 	data.Set("log_link", target.AlertContentSet.LogLink)
-	data.Set("log_context", taget.AlertContentSet.LogContext)
+	data.Set("log_context", target.AlertContentSet.LogContext)
 	switch target.Type {
 	case "Webhook":
 		data.Set("webhook_url", target.ParameterSet.Url)
