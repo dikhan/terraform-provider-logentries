@@ -7,12 +7,12 @@ import (
 
 func resourceInsightLogset() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceInsightCreate,
-		Read:   resourceInsightRead,
-		Delete: resourceInsightDelete,
-		Update: resourceInsightUpdate,
+		Create: resourceInsightLogsetCreate,
+		Read:   resourceInsightLogsetRead,
+		Delete: resourceInsightLogsetDelete,
+		Update: resourceInsightLogsetUpdate,
 		Importer: &schema.ResourceImporter{
-			State: resourceInsightImport,
+			State: resourceInsightLogsetImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -39,21 +39,18 @@ func resourceInsightLogset() *schema.Resource {
 
 func resourceInsightLogsetCreate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	logset, err := getInsightLogsetFromData(data)
-	if err != nil {
+	logset := getInsightLogsetFromData(data)
+	if err := client.PostLogset(logset); err != nil {
 		return err
 	}
-	if err = client.PostLogset(&logset); err != nil {
-		return err
-	}
-	if err = setInsightLogsetData(data, logset); err != nil {
+	if err := setInsightLogsetData(data, logset); err != nil {
 		return err
 	}
 	return resourceInsightLogsetRead(data, i)
 }
 
 func resourceInsightLogsetImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
-	return []*schema.ResourceData{d}, nil
+	return []*schema.ResourceData{data}, nil
 }
 
 func resourceInsightLogsetRead(data *schema.ResourceData, i interface{}) error {
@@ -70,14 +67,11 @@ func resourceInsightLogsetRead(data *schema.ResourceData, i interface{}) error {
 
 func resourceInsightLogsetUpdate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	logset, err := getInsightLogsetFromData(data)
-	if err != nil {
+	logset := getInsightLogsetFromData(data)
+	if err := client.PutLogset(logset); err != nil {
 		return err
 	}
-	if err = client.PutLogset(&logset); err != nil {
-		return err
-	}
-	if err = setInsightLogsetData(data, logset); err != nil {
+	if err := setInsightLogsetData(data, logset); err != nil {
 		return err
 	}
 	return nil

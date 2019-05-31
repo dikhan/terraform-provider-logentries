@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/mitchellh/mapstructure"
 )
 
 func resourceInsightTarget() *schema.Resource {
@@ -18,19 +17,19 @@ func resourceInsightTarget() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"pagerduty_service_key": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ConflicsWith: []string{"webhook_url", "slack_webhook"},
+				Type:          schema.TypeString,
+				Optional:      true,
+				ConflictsWith: []string{"webhook_url", "slack_webhook"},
 			},
 			"webhook_url": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ConflicsWith: []string{"pagerduty_service_key", "slack_webhook"},
+				Type:          schema.TypeString,
+				Optional:      true,
+				ConflictsWith: []string{"pagerduty_service_key", "slack_webhook"},
 			},
 			"slack_webhook": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ConflicsWith: []string{"pagerduty_service_key", "slack_webhook"},
+				Type:          schema.TypeString,
+				Optional:      true,
+				ConflictsWith: []string{"pagerduty_service_key", "slack_webhook"},
 			},
 			"log_context": {
 				Type:     schema.TypeBool,
@@ -48,21 +47,18 @@ func resourceInsightTarget() *schema.Resource {
 
 func resourceInsightTargetCreate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	target, err := getInsightTargetFromData(data)
-	if err != nil {
+	target := getInsightTargetFromData(data)
+	if err := client.PostTarget(target); err != nil {
 		return err
 	}
-	if err = client.PostTarget(&target); err != nil {
-		return err
-	}
-	if err = setInsightTargetData(data, target); err != nil {
+	if err := setInsightTargetData(data, target); err != nil {
 		return err
 	}
 	return resourceInsightTargetRead(data, i)
 }
 
 func resourceInsightTargetImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
-	return []*schema.ResourceData{d}, nil
+	return []*schema.ResourceData{data}, nil
 }
 
 func resourceInsightTargetRead(data *schema.ResourceData, i interface{}) error {
@@ -79,14 +75,11 @@ func resourceInsightTargetRead(data *schema.ResourceData, i interface{}) error {
 
 func resourceInsightTargetUpdate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	target, err := getInsightTargetFromData(data)
-	if err != nil {
+	target := getInsightTargetFromData(data)
+	if err := client.PutTarget(target); err != nil {
 		return err
 	}
-	if err = client.PutTarget(&target); err != nil {
-		return err
-	}
-	if err = setInsightTargetData(data, target); err != nil {
+	if err := setInsightTargetData(data, target); err != nil {
 		return err
 	}
 	return nil
@@ -104,24 +97,24 @@ func resourceInsightTargetDelete(data *schema.ResourceData, i interface{}) error
 func getInsightTargetFromData(data *schema.ResourceData) *insight_goclient.Target {
 	target := insight_goclient.Target{
 		Id: data.Id(),
-		AlertContentSet: insight_client.TargetAlertContentSet{
+		AlertContentSet: insight_goclient.TargetAlertContentSet{
 			LogLink: data.Get("log_link").(bool),
 			Context: data.Get("log_context").(bool),
 		},
 	}
 	if attr, ok := data.GetOk("pagerduty_service_key"); ok {
 		target.Type = "Pagerduty"
-		target.ParameterSet = insight_client.TargetParameterSet{
+		target.ParameterSet = insight_goclient.TargetParameterSet{
 			ServiceKey: attr.(string),
 		}
 	} else if attr, ok := data.GetOk("webhook_url"); ok {
 		target.Type = "Webhook"
-		target.ParameterSet = insight_client.TargetParameterSet{
+		target.ParameterSet = insight_goclient.TargetParameterSet{
 			Url: attr.(string),
 		}
 	} else if attr, ok := data.GetOk("slack_webhook"); ok {
 		target.Type = "Slack"
-		target.ParameterSet = insight_client.TargetParameterSet{
+		target.ParameterSet = insight_goclient.TargetParameterSet{
 			Url: attr.(string),
 		}
 	}

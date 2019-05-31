@@ -49,21 +49,18 @@ func resourceInsightTag() *schema.Resource {
 
 func resourceInsightTagCreate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	tag, err := getInsightTagFromData(data)
-	if err != nil {
+	tag := getInsightTagFromData(data)
+	if err := client.PostTag(tag); err != nil {
 		return err
 	}
-	if err = client.PostTag(&tag); err != nil {
-		return err
-	}
-	if err = setInsightTagData(data, tag); err != nil {
+	if err := setInsightTagData(data, tag); err != nil {
 		return err
 	}
 	return resourceInsightTagRead(data, i)
 }
 
 func resourceInsightTagImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
-	return []*schema.ResourceData{d}, nil
+	return []*schema.ResourceData{data}, nil
 }
 
 func resourceInsightTagRead(data *schema.ResourceData, i interface{}) error {
@@ -80,14 +77,11 @@ func resourceInsightTagRead(data *schema.ResourceData, i interface{}) error {
 
 func resourceInsightTagUpdate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	tag, err := getInsightTagFromData(data)
-	if err != nil {
+	tag := getInsightTagFromData(data)
+	if err := client.PutTag(tag); err != nil {
 		return err
 	}
-	if err = client.PutTag(&tag); err != nil {
-		return err
-	}
-	if err = setInsightTagData(data, tag); err != nil {
+	if err := setInsightTagData(data, tag); err != nil {
 		return err
 	}
 	return nil

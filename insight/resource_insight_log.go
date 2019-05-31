@@ -1,7 +1,6 @@
 package insight
 
 import (
-	"fmt"
 	"github.com/dikhan/insight_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -52,21 +51,18 @@ func resourceInsightLog() *schema.Resource {
 
 func resourceInsightLogCreate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	log, err := getInsightLogFromData(data)
-	if err != nil {
+	log := getInsightLogFromData(data)
+	if err := client.PostLog(log); err != nil {
 		return err
 	}
-	if err = client.PostLog(&log); err != nil {
-		return err
-	}
-	if err = setInsightLogData(data, log); err != nil {
+	if err := setInsightLogData(data, log); err != nil {
 		return err
 	}
 	return resourceInsightLogRead(data, i)
 }
 
 func resourceInsightLogImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
-	return []*schema.ResourceData{d}, nil
+	return []*schema.ResourceData{data}, nil
 }
 
 func resourceInsightLogRead(data *schema.ResourceData, i interface{}) error {
@@ -83,14 +79,11 @@ func resourceInsightLogRead(data *schema.ResourceData, i interface{}) error {
 
 func resourceInsightLogUpdate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	log, err := getInsightLogFromData(data)
-	if err != nil {
+	log := getInsightLogFromData(data)
+	if err := client.PutLog(log); err != nil {
 		return err
 	}
-	if err = client.PutLog(&log); err != nil {
-		return err
-	}
-	if err = setInsightLogData(data, log); err != nil {
+	if err := setInsightLogData(data, log); err != nil {
 		return err
 	}
 	return nil

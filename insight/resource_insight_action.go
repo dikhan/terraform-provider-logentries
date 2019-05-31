@@ -59,21 +59,18 @@ func resourceInsightAction() *schema.Resource {
 
 func resourceInsightActionCreate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	action, err := getInsightActionFromData(data)
-	if err != nil {
+	action := getInsightActionFromData(data)
+	if err := client.PostAction(action); err != nil {
 		return err
 	}
-	if err = client.PostAction(&action); err != nil {
-		return err
-	}
-	if err = setInsightActionData(data, action); err != nil {
+	if err := setInsightActionData(data, action); err != nil {
 		return err
 	}
 	return resourceInsightActionRead(data, i)
 }
 
 func resourceInsightActionImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
-	return []*schema.ResourceData{d}, nil
+	return []*schema.ResourceData{data}, nil
 }
 
 func resourceInsightActionRead(data *schema.ResourceData, i interface{}) error {
@@ -90,14 +87,11 @@ func resourceInsightActionRead(data *schema.ResourceData, i interface{}) error {
 
 func resourceInsightActionUpdate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	action, err := getInsightActionFromData(data)
-	if err != nil {
+	action := getInsightActionFromData(data)
+	if err := client.PutAction(action); err != nil {
 		return err
 	}
-	if err = client.PutAction(action); err != nil {
-		return err
-	}
-	if err = setInsightActionData(data, action); err != nil {
+	if err := setInsightActionData(data, action); err != nil {
 		return err
 	}
 	return nil

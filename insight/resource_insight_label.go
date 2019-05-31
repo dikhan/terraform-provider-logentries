@@ -35,21 +35,18 @@ func resourceInsightLabel() *schema.Resource {
 
 func resourceInsightLabelCreate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	label, err := getInsightLabelFromData(data)
-	if err != nil {
+	label := getInsightLabelFromData(data)
+	if err := client.PostLabel(label); err != nil {
 		return err
 	}
-	if err = client.PostLabel(&label); err != nil {
-		return err
-	}
-	if err = setInsightLabelData(data, label); err != nil {
+	if err := setInsightLabelData(data, label); err != nil {
 		return err
 	}
 	return resourceInsightLabelRead(data, i)
 }
 
 func resourceInsightLabelImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
-	return []*schema.ResourceData{d}, nil
+	return []*schema.ResourceData{data}, nil
 }
 
 func resourceInsightLabelRead(data *schema.ResourceData, i interface{}) error {
@@ -66,14 +63,11 @@ func resourceInsightLabelRead(data *schema.ResourceData, i interface{}) error {
 
 func resourceInsightLabelUpdate(data *schema.ResourceData, i interface{}) error {
 	client := i.(insight_goclient.InsightClient)
-	label, err := getInsightLabelFromData(data)
-	if err != nil {
+	label := getInsightLabelFromData(data)
+	if err := client.PutLabel(label); err != nil {
 		return err
 	}
-	if err = client.PutLabel(&label); err != nil {
-		return err
-	}
-	if err = setInsightLabelData(data, label); err != nil {
+	if err := setInsightLabelData(data, label); err != nil {
 		return err
 	}
 	return nil
