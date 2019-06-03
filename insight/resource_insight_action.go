@@ -107,10 +107,10 @@ func resourceInsightActionDelete(data *schema.ResourceData, meta interface{}) er
 }
 
 func getInsightActionFromData(data *schema.ResourceData) *insight_goclient.Action {
-	var targets []insight_goclient.Target
+	var targets []*insight_goclient.Target
 	if v, ok := data.GetOk("targets"); ok {
 		for _, id := range v.(*schema.Set).List() {
-			targets = append(targets, insight_goclient.Target{Id: id.(string)})
+			targets = append(targets, &insight_goclient.Target{Id: id.(string)})
 		}
 	}
 	return &insight_goclient.Action{

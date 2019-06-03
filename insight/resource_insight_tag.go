@@ -103,17 +103,17 @@ func getInsightTagFromData(data *schema.ResourceData) *insight_goclient.Tag {
 			patterns = append(patterns, pattern.(string))
 		}
 	}
-	var actions []insight_goclient.Action
+	var actions []*insight_goclient.Action
 	for _, id := range data.Get("action_ids").(*schema.Set).List() {
-		actions = append(actions, insight_goclient.Action{Id: id.(string)})
+		actions = append(actions, &insight_goclient.Action{Id: id.(string)})
 	}
-	var sources []insight_goclient.Source
+	var sources []*insight_goclient.Source
 	for _, id := range data.Get("source_ids").(*schema.Set).List() {
-		sources = append(sources, insight_goclient.Source{Id: id.(string)})
+		sources = append(sources, &insight_goclient.Source{Id: id.(string)})
 	}
-	var labels []insight_goclient.Label
+	var labels []*insight_goclient.Label
 	for _, id := range data.Get("label_ids").(*schema.Set).List() {
-		labels = append(labels, insight_goclient.Label{Id: id.(string)})
+		labels = append(labels, &insight_goclient.Label{Id: id.(string)})
 	}
 	return &insight_goclient.Tag{
 		Id:       data.Id(),

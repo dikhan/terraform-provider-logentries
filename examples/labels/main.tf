@@ -4,7 +4,7 @@ provider insight {
   region  = "eu"
 }
 
-resource insight_labels my_label {
+resource insight_label my_label {
   name  = "My Label"
   color = "ff0000"
 }

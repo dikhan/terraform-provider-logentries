@@ -96,24 +96,24 @@ func resourceInsightTargetDelete(data *schema.ResourceData, meta interface{}) er
 func getInsightTargetFromData(data *schema.ResourceData) *insight_goclient.Target {
 	target := insight_goclient.Target{
 		Id: data.Id(),
-		AlertContentSet: insight_goclient.TargetAlertContentSet{
+		AlertContentSet: &insight_goclient.TargetAlertContentSet{
 			LogLink: data.Get("log_link").(string),
 			Context: data.Get("log_context").(string),
 		},
 	}
 	if attr, ok := data.GetOk("pagerduty_service_key"); ok {
 		target.Type = "Pagerduty"
-		target.ParameterSet = insight_goclient.TargetParameterSet{
+		target.ParameterSet = &insight_goclient.TargetParameterSet{
 			ServiceKey: attr.(string),
 		}
 	} else if attr, ok := data.GetOk("webhook_url"); ok {
 		target.Type = "Webhook"
-		target.ParameterSet = insight_goclient.TargetParameterSet{
+		target.ParameterSet = &insight_goclient.TargetParameterSet{
 			Url: attr.(string),
 		}
 	} else if attr, ok := data.GetOk("slack_webhook"); ok {
 		target.Type = "Slack"
-		target.ParameterSet = insight_goclient.TargetParameterSet{
+		target.ParameterSet = &insight_goclient.TargetParameterSet{
 			Url: attr.(string),
 		}
 	}

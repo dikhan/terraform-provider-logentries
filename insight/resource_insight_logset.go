@@ -49,12 +49,12 @@ func resourceInsightLogsetCreate(data *schema.ResourceData, meta interface{}) er
 	return resourceInsightLogsetRead(data, meta)
 }
 
-func resourceInsightLogsetImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+func resourceInsightLogsetImport(data *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	return []*schema.ResourceData{data}, nil
 }
 
-func resourceInsightLogsetRead(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightLogsetRead(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	logset, err := client.GetLogset(data.Id())
 	if err != nil {
 		return nil
@@ -87,10 +87,10 @@ func resourceInsightLogsetDelete(data *schema.ResourceData, meta interface{}) er
 }
 
 func getInsightLogsetFromData(data *schema.ResourceData) *insight_goclient.Logset {
-	var logs []insight_goclient.Info
+	var logs []*insight_goclient.Info
 	if v, ok := data.GetOk("logs_ids"); ok {
 		for _, id := range v.(*schema.Set).List() {
-			logs = append(logs, insight_goclient.Info{Id: id.(string)})
+			logs = append(logs, &insight_goclient.Info{Id: id.(string)})
 		}
 	}
 	var userData map[string]string

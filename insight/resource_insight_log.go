@@ -113,15 +113,21 @@ func resourceInsightLogDelete(data *schema.ResourceData, meta interface{}) error
 
 func getInsightLogFromData(data *schema.ResourceData) *insight_goclient.Log {
 	var structures []string
-	var logsetIds []insight_goclient.Info
+	var logsetIds []*insight_goclient.Info
+	var tokens []string
 	if v, ok := data.GetOk("structures"); ok {
 		for _, structure := range v.(*schema.Set).List() {
 			structures = append(structures, structure.(string))
 		}
 	}
+	if v, ok := data.GetOk("tokens"); ok {
+		for _, token := range v.(*schema.Set).List() {
+			tokens = append(tokens, token.(string))
+		}
+	}
 	if v, ok := data.GetOk("logset_ids"); ok {
 		for _, logsetId := range v.(*schema.Set).List() {
-			logsetIds = append(logsetIds, insight_goclient.Info{Id: logsetId.(string)})
+			logsetIds = append(logsetIds, &insight_goclient.Info{Id: logsetId.(string)})
 		}
 	}
 	log := insight_goclient.Log{
@@ -129,14 +135,14 @@ func getInsightLogFromData(data *schema.ResourceData) *insight_goclient.Log {
 		SourceType:  data.Get("source_type").(string),
 		Name:        data.Get("name").(string),
 		TokenSeed:   data.Get("token_seed").(string),
-		Tokens:      data.Get("tokens").([]string),
+		Tokens:      tokens,
 		Structures:  structures,
 		LogsetsInfo: logsetIds,
 	}
 	if v, ok := data.GetOk("user_data"); ok {
 		userDataSettingsData := v.(*schema.Set).List()[0]
 		userDataSettings := userDataSettingsData.(map[string]interface{})
-		log.UserData = insight_goclient.LogUserData{
+		log.UserData = &insight_goclient.LogUserData{
 			AgentFileName: userDataSettings["agent_filename"].(string),
 			AgentFollow:   userDataSettings["agent_follow"].(string),
 		}
