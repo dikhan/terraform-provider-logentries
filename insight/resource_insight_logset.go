@@ -49,12 +49,12 @@ func resourceInsightLogsetCreate(data *schema.ResourceData, meta interface{}) er
 	return resourceInsightLogsetRead(data, meta)
 }
 
-func resourceInsightLogsetImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+func resourceInsightLogsetImport(data *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	return []*schema.ResourceData{data}, nil
 }
 
-func resourceInsightLogsetRead(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightLogsetRead(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	logset, err := client.GetLogset(data.Id())
 	if err != nil {
 		return nil

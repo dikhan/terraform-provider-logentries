@@ -34,14 +34,14 @@ func dataSourceLabelRead(data *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-	if len(*labels) == 0 {
+	if len(labels) == 0 {
 		return fmt.Errorf("No label with name %s found.", name)
 	}
-	if len(*labels) > 1 {
+	if len(labels) > 1 {
 		return fmt.Errorf("Multiple topics with name %s found. Please use color to get a valid label", name)
 	}
-	data.SetId((*labels)[0].Id)
-	data.Set("color", (*labels)[0].Color)
-	data.Set("label_id", (*labels)[0].Id)
+	data.SetId(labels[0].Id)
+	data.Set("color", labels[0].Color)
+	data.Set("label_id", labels[0].Id)
 	return nil
 }
