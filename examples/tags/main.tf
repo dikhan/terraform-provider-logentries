@@ -16,6 +16,7 @@ resource insight_action alert1 {
   min_matches_period = "Hour"
   min_report_count   = 1
   min_report_period  = "Hour"
+
   targets = [
     "${insight_target.pagerduty.id}",
   ]
