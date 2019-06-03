@@ -41,9 +41,22 @@ func resourceInsightLog() *schema.Resource {
 				Optional: true,
 			},
 			"user_data": {
-				Type:     schema.TypeMap,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Type:     schema.TypeSet,
 				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"agent_filename": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"agent_follow": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  true,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -99,22 +112,42 @@ func resourceInsightLogDelete(data *schema.ResourceData, i interface{}) error {
 }
 
 func getInsightLogFromData(data *schema.ResourceData) *insight_goclient.Log {
-	return &insight_goclient.Log{
+	var structures []string
+	var logsetIds []insight_goclient.Info
+	if v, ok := data.GetOk("structures"); ok {
+		for _, structure := range v.(*schema.Set).List() {
+			structures = append(structures, structure.(string))
+		}
+	}
+	if v, ok := data.GetOk("logset_ids"); ok {
+		for _, logsetId := range v.(*schema.Set).List() {
+			logsetIds = append(logsetIds, insight_goclient.Info{Id: logsetId.(string)})
+		}
+	}
+	log := insight_goclient.Log{
 		Id:          data.Id(),
 		SourceType:  data.Get("source_type").(string),
 		Name:        data.Get("name").(string),
 		TokenSeed:   data.Get("token_seed").(string),
 		Tokens:      data.Get("tokens").([]string),
-		Structures:  data.Get("structures").([]string),
-		LogsetsInfo: data.Get("logset_ids").([]string),
-		UserData:    data.Get("user_data").(map[string]string),
+		Structures:  structures,
+		LogsetsInfo: logsetIds,
 	}
+	if v, ok := data.GetOk("user_data"); ok {
+		userDataSettingsData := v.(*schema.Set).List()[0]
+		userDataSettings := userDataSettingsData.(map[string]interface{})
+		log.UserData = insight_goclient.LogUserData{
+			AgentFileName: userDataSettings["agent_filename"].(string),
+			AgentFollow:   userDataSettings["agent_follow"].(string),
+		}
+	}
+	return &log
 }
 
 func setInsightLogData(data *schema.ResourceData, log *insight_goclient.Log) error {
 	var logsets []string
 	for _, logset := range log.LogsetsInfo {
-		logsets := append(logsets, logset.Id)
+		logsets = append(logsets, logset.Id)
 	}
 	data.SetId(log.Id)
 	data.Set("name", log.Name)

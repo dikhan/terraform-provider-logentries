@@ -97,6 +97,12 @@ func resourceInsightTagDelete(data *schema.ResourceData, i interface{}) error {
 }
 
 func getInsightTagFromData(data *schema.ResourceData) *insight_goclient.Tag {
+	var patterns []string
+	if v, ok := data.GetOk("patterns"); ok {
+		for _, pattern := range v.(*schema.Set).List() {
+			patterns = append(patterns, pattern.(string))
+		}
+	}
 	var actions []insight_goclient.Action
 	for _, id := range data.Get("action_ids").(*schema.Set).List() {
 		actions = append(actions, insight_goclient.Action{Id: id.(string)})
@@ -113,7 +119,7 @@ func getInsightTagFromData(data *schema.ResourceData) *insight_goclient.Tag {
 		Id:       data.Id(),
 		Type:     data.Get("type").(string),
 		Name:     data.Get("name").(string),
-		Patterns: data.Get("patterns").(*schema.Set).List().([]string),
+		Patterns: patterns,
 		Sources:  sources,
 		Actions:  actions,
 		Labels:   labels,
@@ -123,15 +129,15 @@ func getInsightTagFromData(data *schema.ResourceData) *insight_goclient.Tag {
 func setInsightTagData(data *schema.ResourceData, tag *insight_goclient.Tag) error {
 	var labels []string
 	for _, label := range tag.Labels {
-		labels := append(labels, label.Id)
+		labels = append(labels, label.Id)
 	}
 	var sources []string
 	for _, source := range tag.Sources {
-		sources := append(sources, source.Id)
+		sources = append(sources, source.Id)
 	}
 	var actions []string
 	for _, action := range tag.Actions {
-		actions := append(actions, action.Id)
+		actions = append(actions, action.Id)
 	}
 	data.SetId(tag.Id)
 	data.Set("patterns", tag.Patterns)

@@ -91,11 +91,17 @@ func getInsightLogsetFromData(data *schema.ResourceData) *insight_goclient.Logse
 	for _, id := range data.Get("logs_ids").(*schema.Set).List() {
 		logs = append(logs, insight_goclient.Info{Id: id.(string)})
 	}
+	var userData map[string]string
+	if v, ok := data.GetOk("user_data"); ok {
+		for key, value := range v.(map[string]interface{}) {
+			userData[key] = value.(string)
+		}
+	}
 	return &insight_goclient.Logset{
 		Id:          data.Id(),
 		Name:        data.Get("name").(string),
 		Description: data.Get("description").(string),
-		UserData:    data.Get("user_data").(string),
+		UserData:    userData,
 		LogsInfo:    logs,
 	}
 }
@@ -103,7 +109,7 @@ func getInsightLogsetFromData(data *schema.ResourceData) *insight_goclient.Logse
 func setInsightLogsetData(data *schema.ResourceData, logset *insight_goclient.Logset) error {
 	var logs []string
 	for _, log := range logset.LogsInfo {
-		logs := append(logs, log.Id)
+		logs = append(logs, log.Id)
 	}
 	data.SetId(logset.Id)
 	data.Set("name", logset.Name)
