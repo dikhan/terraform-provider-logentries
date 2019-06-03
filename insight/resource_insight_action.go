@@ -57,8 +57,8 @@ func resourceInsightAction() *schema.Resource {
 	}
 }
 
-func resourceInsightActionCreate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightActionCreate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	action := getInsightActionFromData(data)
 	if err := client.PostAction(action); err != nil {
 		return err
@@ -66,15 +66,15 @@ func resourceInsightActionCreate(data *schema.ResourceData, i interface{}) error
 	if err := setInsightActionData(data, action); err != nil {
 		return err
 	}
-	return resourceInsightActionRead(data, i)
+	return resourceInsightActionRead(data, meta)
 }
 
-func resourceInsightActionImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+func resourceInsightActionImport(data *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	return []*schema.ResourceData{data}, nil
 }
 
-func resourceInsightActionRead(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightActionRead(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	action, err := client.GetAction(data.Id())
 	if err != nil {
 		return nil
@@ -85,8 +85,8 @@ func resourceInsightActionRead(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func resourceInsightActionUpdate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightActionUpdate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	action := getInsightActionFromData(data)
 	if err := client.PutAction(action); err != nil {
 		return err
@@ -97,9 +97,9 @@ func resourceInsightActionUpdate(data *schema.ResourceData, i interface{}) error
 	return nil
 }
 
-func resourceInsightActionDelete(data *schema.ResourceData, i interface{}) error {
+func resourceInsightActionDelete(data *schema.ResourceData, meta interface{}) error {
 	actionId := data.Id()
-	client := i.(insight_goclient.InsightClient)
+	client := meta.(*insight_goclient.InsightClient)
 	if err := client.DeleteAction(actionId); err != nil {
 		return err
 	}
@@ -108,8 +108,10 @@ func resourceInsightActionDelete(data *schema.ResourceData, i interface{}) error
 
 func getInsightActionFromData(data *schema.ResourceData) *insight_goclient.Action {
 	var targets []insight_goclient.Target
-	for _, id := range data.Get("targets").(*schema.Set).List() {
-		targets = append(targets, insight_goclient.Target{Id: id.(string)})
+	if v, ok := data.GetOk("targets"); ok {
+		for _, id := range v.(*schema.Set).List() {
+			targets = append(targets, insight_goclient.Target{Id: id.(string)})
+		}
 	}
 	return &insight_goclient.Action{
 		Id:               data.Id(),

@@ -62,8 +62,8 @@ func resourceInsightLog() *schema.Resource {
 	}
 }
 
-func resourceInsightLogCreate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightLogCreate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	log := getInsightLogFromData(data)
 	if err := client.PostLog(log); err != nil {
 		return err
@@ -71,15 +71,15 @@ func resourceInsightLogCreate(data *schema.ResourceData, i interface{}) error {
 	if err := setInsightLogData(data, log); err != nil {
 		return err
 	}
-	return resourceInsightLogRead(data, i)
+	return resourceInsightLogRead(data, meta)
 }
 
-func resourceInsightLogImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+func resourceInsightLogImport(data *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	return []*schema.ResourceData{data}, nil
 }
 
-func resourceInsightLogRead(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightLogRead(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	log, err := client.GetLog(data.Id())
 	if err != nil {
 		return nil
@@ -90,8 +90,8 @@ func resourceInsightLogRead(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func resourceInsightLogUpdate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightLogUpdate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	log := getInsightLogFromData(data)
 	if err := client.PutLog(log); err != nil {
 		return err
@@ -102,9 +102,9 @@ func resourceInsightLogUpdate(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func resourceInsightLogDelete(data *schema.ResourceData, i interface{}) error {
+func resourceInsightLogDelete(data *schema.ResourceData, meta interface{}) error {
 	logId := data.Id()
-	client := i.(insight_goclient.InsightClient)
+	client := meta.(*insight_goclient.InsightClient)
 	if err := client.DeleteLog(logId); err != nil {
 		return err
 	}

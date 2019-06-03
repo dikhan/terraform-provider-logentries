@@ -37,8 +37,8 @@ func resourceInsightLogset() *schema.Resource {
 	}
 }
 
-func resourceInsightLogsetCreate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightLogsetCreate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	logset := getInsightLogsetFromData(data)
 	if err := client.PostLogset(logset); err != nil {
 		return err
@@ -46,7 +46,7 @@ func resourceInsightLogsetCreate(data *schema.ResourceData, i interface{}) error
 	if err := setInsightLogsetData(data, logset); err != nil {
 		return err
 	}
-	return resourceInsightLogsetRead(data, i)
+	return resourceInsightLogsetRead(data, meta)
 }
 
 func resourceInsightLogsetImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
@@ -65,8 +65,8 @@ func resourceInsightLogsetRead(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func resourceInsightLogsetUpdate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightLogsetUpdate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	logset := getInsightLogsetFromData(data)
 	if err := client.PutLogset(logset); err != nil {
 		return err
@@ -77,9 +77,9 @@ func resourceInsightLogsetUpdate(data *schema.ResourceData, i interface{}) error
 	return nil
 }
 
-func resourceInsightLogsetDelete(data *schema.ResourceData, i interface{}) error {
+func resourceInsightLogsetDelete(data *schema.ResourceData, meta interface{}) error {
 	logsetId := data.Id()
-	client := i.(insight_goclient.InsightClient)
+	client := meta.(*insight_goclient.InsightClient)
 	if err := client.DeleteLogset(logsetId); err != nil {
 		return err
 	}
@@ -88,8 +88,10 @@ func resourceInsightLogsetDelete(data *schema.ResourceData, i interface{}) error
 
 func getInsightLogsetFromData(data *schema.ResourceData) *insight_goclient.Logset {
 	var logs []insight_goclient.Info
-	for _, id := range data.Get("logs_ids").(*schema.Set).List() {
-		logs = append(logs, insight_goclient.Info{Id: id.(string)})
+	if v, ok := data.GetOk("logs_ids"); ok {
+		for _, id := range v.(*schema.Set).List() {
+			logs = append(logs, insight_goclient.Info{Id: id.(string)})
+		}
 	}
 	var userData map[string]string
 	if v, ok := data.GetOk("user_data"); ok {

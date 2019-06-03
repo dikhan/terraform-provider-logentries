@@ -33,8 +33,8 @@ func resourceInsightLabel() *schema.Resource {
 	}
 }
 
-func resourceInsightLabelCreate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightLabelCreate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	label := getInsightLabelFromData(data)
 	if err := client.PostLabel(label); err != nil {
 		return err
@@ -42,15 +42,15 @@ func resourceInsightLabelCreate(data *schema.ResourceData, i interface{}) error 
 	if err := setInsightLabelData(data, label); err != nil {
 		return err
 	}
-	return resourceInsightLabelRead(data, i)
+	return resourceInsightLabelRead(data, meta)
 }
 
-func resourceInsightLabelImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+func resourceInsightLabelImport(data *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	return []*schema.ResourceData{data}, nil
 }
 
-func resourceInsightLabelRead(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightLabelRead(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	label, err := client.GetLabel(data.Id())
 	if err != nil {
 		return nil
@@ -61,8 +61,8 @@ func resourceInsightLabelRead(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func resourceInsightLabelUpdate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightLabelUpdate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	label := getInsightLabelFromData(data)
 	if err := client.PutLabel(label); err != nil {
 		return err
@@ -73,9 +73,9 @@ func resourceInsightLabelUpdate(data *schema.ResourceData, i interface{}) error 
 	return nil
 }
 
-func resourceInsightLabelDelete(data *schema.ResourceData, i interface{}) error {
+func resourceInsightLabelDelete(data *schema.ResourceData, meta interface{}) error {
 	labelId := data.Id()
-	client := i.(insight_goclient.InsightClient)
+	client := meta.(*insight_goclient.InsightClient)
 	if err := client.DeleteLabel(labelId); err != nil {
 		return err
 	}

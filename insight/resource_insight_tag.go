@@ -47,8 +47,8 @@ func resourceInsightTag() *schema.Resource {
 	}
 }
 
-func resourceInsightTagCreate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightTagCreate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	tag := getInsightTagFromData(data)
 	if err := client.PostTag(tag); err != nil {
 		return err
@@ -56,15 +56,15 @@ func resourceInsightTagCreate(data *schema.ResourceData, i interface{}) error {
 	if err := setInsightTagData(data, tag); err != nil {
 		return err
 	}
-	return resourceInsightTagRead(data, i)
+	return resourceInsightTagRead(data, meta)
 }
 
-func resourceInsightTagImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+func resourceInsightTagImport(data *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	return []*schema.ResourceData{data}, nil
 }
 
-func resourceInsightTagRead(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightTagRead(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	tag, err := client.GetTag(data.Id())
 	if err != nil {
 		return nil
@@ -75,8 +75,8 @@ func resourceInsightTagRead(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func resourceInsightTagUpdate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightTagUpdate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	tag := getInsightTagFromData(data)
 	if err := client.PutTag(tag); err != nil {
 		return err
@@ -87,9 +87,9 @@ func resourceInsightTagUpdate(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func resourceInsightTagDelete(data *schema.ResourceData, i interface{}) error {
+func resourceInsightTagDelete(data *schema.ResourceData, meta interface{}) error {
 	tagId := data.Id()
-	client := i.(insight_goclient.InsightClient)
+	client := meta.(*insight_goclient.InsightClient)
 	if err := client.DeleteTag(tagId); err != nil {
 		return err
 	}

@@ -44,8 +44,8 @@ func resourceInsightTarget() *schema.Resource {
 	}
 }
 
-func resourceInsightTargetCreate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightTargetCreate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	target := getInsightTargetFromData(data)
 	if err := client.PostTarget(target); err != nil {
 		return err
@@ -53,15 +53,15 @@ func resourceInsightTargetCreate(data *schema.ResourceData, i interface{}) error
 	if err := setInsightTargetData(data, target); err != nil {
 		return err
 	}
-	return resourceInsightTargetRead(data, i)
+	return resourceInsightTargetRead(data, meta)
 }
 
-func resourceInsightTargetImport(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+func resourceInsightTargetImport(data *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	return []*schema.ResourceData{data}, nil
 }
 
-func resourceInsightTargetRead(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightTargetRead(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	target, err := client.GetTarget(data.Id())
 	if err != nil {
 		return nil
@@ -72,8 +72,8 @@ func resourceInsightTargetRead(data *schema.ResourceData, i interface{}) error {
 	return nil
 }
 
-func resourceInsightTargetUpdate(data *schema.ResourceData, i interface{}) error {
-	client := i.(insight_goclient.InsightClient)
+func resourceInsightTargetUpdate(data *schema.ResourceData, meta interface{}) error {
+	client := meta.(*insight_goclient.InsightClient)
 	target := getInsightTargetFromData(data)
 	if err := client.PutTarget(target); err != nil {
 		return err
@@ -84,9 +84,9 @@ func resourceInsightTargetUpdate(data *schema.ResourceData, i interface{}) error
 	return nil
 }
 
-func resourceInsightTargetDelete(data *schema.ResourceData, i interface{}) error {
+func resourceInsightTargetDelete(data *schema.ResourceData, meta interface{}) error {
 	targetId := data.Id()
-	client := i.(insight_goclient.InsightClient)
+	client := meta.(*insight_goclient.InsightClient)
 	if err := client.DeleteTarget(targetId); err != nil {
 		return err
 	}
