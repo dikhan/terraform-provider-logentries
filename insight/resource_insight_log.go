@@ -51,7 +51,7 @@ func resourceInsightLog() *schema.Resource {
 							Optional: true,
 						},
 						"agent_follow": {
-							Type:     schema.TypeString,
+							Type:     schema.TypeBool,
 							Optional: true,
 							Default:  true,
 						},
@@ -144,7 +144,7 @@ func getInsightLogFromData(data *schema.ResourceData) *insight_goclient.Log {
 		userDataSettings := userDataSettingsData.(map[string]interface{})
 		log.UserData = &insight_goclient.LogUserData{
 			AgentFileName: userDataSettings["agent_filename"].(string),
-			AgentFollow:   userDataSettings["agent_follow"].(string),
+			AgentFollow:   insight_goclient.StringBool(userDataSettings["agent_follow"].(bool)),
 		}
 	}
 	return &log
@@ -155,12 +155,20 @@ func setInsightLogData(data *schema.ResourceData, log *insight_goclient.Log) err
 	for _, logset := range log.LogsetsInfo {
 		logsets = append(logsets, logset.Id)
 	}
+
+	if log.UserData != nil {
+		userData := map[string]interface{}{
+			"agent_follow":   log.UserData.AgentFollow,
+			"agent_filename": log.UserData.AgentFileName,
+		}
+		data.Set("user_data", []interface{}{userData})
+	}
+
 	data.SetId(log.Id)
 	data.Set("name", log.Name)
 	data.Set("source_type", log.SourceType)
 	data.Set("token_seed", log.TokenSeed)
 	data.Set("tokens", log.Tokens)
-	data.Set("user_data", log.UserData)
 	data.Set("structures", log.Structures)
 	data.Set("logset_ids", logsets)
 	return nil

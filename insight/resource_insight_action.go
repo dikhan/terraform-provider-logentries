@@ -12,8 +12,8 @@ var actionPeriods = []string{
 	"10Minute",
 	"15Minute",
 	"30Minute",
-	"1Hour",
-	"1Day",
+	"Hour",
+	"Day",
 }
 
 func resourceInsightAction() *schema.Resource {
@@ -26,13 +26,23 @@ func resourceInsightAction() *schema.Resource {
 			State: resourceInsightActionImport,
 		},
 		Schema: map[string]*schema.Schema{
-			"min_matches_count": {
+			"type": {
 				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "Alert",
+			},
+			"enabled": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
+			"min_matches_count": {
+				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  1,
 			},
 			"min_report_count": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  1,
 			},
@@ -115,6 +125,8 @@ func getInsightActionFromData(data *schema.ResourceData) *insight_goclient.Actio
 	}
 	return &insight_goclient.Action{
 		Id:               data.Id(),
+		Enabled:          data.Get("enabled").(bool),
+		Type:             data.Get("type").(string),
 		MinMatchesCount:  data.Get("min_matches_count").(int),
 		MinReportCount:   data.Get("min_report_count").(int),
 		MinMatchesPeriod: data.Get("min_matches_period").(string),

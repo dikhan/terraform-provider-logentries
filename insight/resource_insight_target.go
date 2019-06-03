@@ -21,6 +21,10 @@ func resourceInsightTarget() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"webhook_url", "slack_webhook"},
 			},
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
 			"webhook_url": {
 				Type:          schema.TypeString,
 				Optional:      true,
@@ -32,11 +36,12 @@ func resourceInsightTarget() *schema.Resource {
 				ConflictsWith: []string{"pagerduty_service_key", "slack_webhook"},
 			},
 			"log_context": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Optional: true,
+				Default:  true,
 			},
 			"log_link": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,
 			},
@@ -95,10 +100,11 @@ func resourceInsightTargetDelete(data *schema.ResourceData, meta interface{}) er
 
 func getInsightTargetFromData(data *schema.ResourceData) *insight_goclient.Target {
 	target := insight_goclient.Target{
-		Id: data.Id(),
+		Id:   data.Id(),
+		Name: data.Get("name").(string),
 		AlertContentSet: &insight_goclient.TargetAlertContentSet{
-			LogLink: data.Get("log_link").(string),
-			Context: data.Get("log_context").(string),
+			LogLink: insight_goclient.StringBool(data.Get("log_link").(bool)),
+			Context: insight_goclient.StringBool(data.Get("log_context").(bool)),
 		},
 	}
 	if attr, ok := data.GetOk("pagerduty_service_key"); ok {
@@ -124,6 +130,7 @@ func setInsightTargetData(data *schema.ResourceData, target *insight_goclient.Ta
 	data.SetId(target.Id)
 	data.Set("log_link", target.AlertContentSet.LogLink)
 	data.Set("log_context", target.AlertContentSet.Context)
+	data.Set("name", target.Name)
 	switch target.Type {
 	case "Webhook":
 		data.Set("webhook_url", target.ParameterSet.Url)
