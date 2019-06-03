@@ -23,6 +23,7 @@ resource insight_action alert1 {
 }
 
 resource insight_target pagerduty {
+  name = "pgdt"
   pagerduty_service_key = "asdasdasdasd"
 }
 

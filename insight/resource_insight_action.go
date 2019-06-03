@@ -118,7 +118,7 @@ func resourceInsightActionDelete(data *schema.ResourceData, meta interface{}) er
 
 func getInsightActionFromData(data *schema.ResourceData) *insight_goclient.Action {
 	var targets []*insight_goclient.Target
-	if v, ok := data.GetOk("targets"); ok {
+	if v, ok := data.GetOk("target_ids"); ok {
 		for _, id := range v.(*schema.Set).List() {
 			targets = append(targets, &insight_goclient.Target{Id: id.(string)})
 		}
@@ -141,6 +141,6 @@ func setInsightActionData(data *schema.ResourceData, action *insight_goclient.Ac
 	data.Set("min_report_count", action.MinReportCount)
 	data.Set("min_matches_period", action.MinMatchesPeriod)
 	data.Set("min_report_period", action.MinReportPeriod)
-	data.Set("targets", action.Targets)
+	data.Set("target_ids", action.Targets)
 	return nil
 }
