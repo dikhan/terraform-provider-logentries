@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-const tagsResourceName = "insight_tags"
+const tagsResourceName = "insight_tag"
 const tagsResourceId = "acceptance_tag"
 
 var tagsResourceStateId = fmt.Sprintf("%s.%s", tagsResourceName, tagsResourceId)
@@ -29,65 +29,44 @@ var sourceId = os.Getenv("SOURCE_ID")
 func init() {
 
 	configTemplate := `
-	provider "insight" {
+	provider insight {
 	  api_key = "%s"
+	  region  = "%s"
 	}
 
-	resource "insight_logsets" "acceptance_logset" {
+	resource insight_logset acceptance_logset {
 	  name = "Sample LogSet for tag acc tests"
 	  description = "some description goes here"
 	}
 
-	resource "insight_logs" "acceptance_log" {
+	resource insight_log acceptance_log {
 	  name = "Sample Log for tag acc tests"
 	  source_type = "token"
 	  token_seed = ""
 	  structures = []
-	  logsets_info = ["${insight_logsets.acceptance_logset.id}"]
+	  logsets_info = ["${insight_logset.acceptance_logset.id}"]
 	  user_data = {
-	    "le_agent_filename" = "",
-		"le_agent_follow" = "false"
+	   	agent_filename = ""
+			agent_follow = false
 	  }
 	}
 
-	resource "%s" "%s" {
+	resource %s %s {
 	  name = "%s"
 	  type = "Alert"
 	  patterns = ["%s"]
-	  sources = ["${insight_logs.acceptance_log.id}"]
-	  labels = []
-	  actions = [
-		{
-		  type = "Alert"
-		  enabled = true
-		  min_matches_count = 1
-		  min_matches_period = "Hour"
-		  min_report_count = 1
-		  min_report_period = "Hour"
-		  targets = [
-			{
-			  type = "Pagerduty"
-			  alert_content_set = {
-				le_context = "true"
-				le_log_link = "true"
-			  }
-			  params_set {
-				description = "%s",
-				service_key = "MY_PD_KEY"
-			  }
-			}
-		  ]
-		}
-	  ]
+	  source_ids = ["${insight_log.acceptance_log.id}"]
+	  label_ids = []
+	  action_ids = []
 	}`
 
-	testTagsCreateConfig = fmt.Sprintf(configTemplate, apiKey, tagsResourceName, tagsResourceId, createTagName, createTagPatterns, createTagActionParamSetDescription)
-	testTagsUpdatedConfig = fmt.Sprintf(configTemplate, apiKey, tagsResourceName, tagsResourceId, updatedTagName, updatedTagPatterns, updatedTagActionParamSetDescription)
+	testTagsCreateConfig = fmt.Sprintf(configTemplate, apiKey, region, tagsResourceName, tagsResourceId, createTagName, createTagPatterns, createTagActionParamSetDescription)
+	testTagsUpdatedConfig = fmt.Sprintf(configTemplate, apiKey, region, tagsResourceName, tagsResourceId, updatedTagName, updatedTagPatterns, updatedTagActionParamSetDescription)
 }
 
 func tagExists() checkExists {
-	return func(leClient insight_goclient.LogEntriesClient, id string) error {
-		_, err := leClient.Tags.GetTag(id)
+	return func(client insight_goclient.InsightClient, id string) error {
+		_, err := client.GetTag(id)
 		return err
 	}
 }
@@ -105,21 +84,6 @@ func TestAccLogentriesTags_Create(t *testing.T) {
 					resource.TestCheckResourceAttr(tagsResourceStateId, "type", "Alert"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.#", "1"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.0", createTagPatterns),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.enabled", "true"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_matches_count", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_matches_period", "Hour"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_report_count", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_report_period", "Hour"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.alert_content_set.%", "2"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.alert_content_set.le_context", "true"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.alert_content_set.le_log_link", "true"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.params_set.%", "2"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.params_set.description", createTagActionParamSetDescription),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.params_set.service_key", "MY_PD_KEY"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.type", "Pagerduty"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.type", "Alert"),
 				),
 			},
 		},
@@ -139,21 +103,6 @@ func TestAccLogentriesTags_Update(t *testing.T) {
 					resource.TestCheckResourceAttr(tagsResourceStateId, "type", "Alert"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.#", "1"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.0", createTagPatterns),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.enabled", "true"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_matches_count", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_matches_period", "Hour"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_report_count", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_report_period", "Hour"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.alert_content_set.%", "2"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.alert_content_set.le_context", "true"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.alert_content_set.le_log_link", "true"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.params_set.%", "2"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.params_set.description", createTagActionParamSetDescription),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.params_set.service_key", "MY_PD_KEY"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.type", "Pagerduty"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.type", "Alert"),
 				),
 			},
 			{
@@ -163,21 +112,6 @@ func TestAccLogentriesTags_Update(t *testing.T) {
 					resource.TestCheckResourceAttr(tagsResourceStateId, "type", "Alert"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.#", "1"),
 					resource.TestCheckResourceAttr(tagsResourceStateId, "patterns.0", updatedTagPatterns),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.enabled", "true"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_matches_count", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_matches_period", "Hour"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_report_count", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.min_report_period", "Hour"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.#", "1"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.alert_content_set.%", "2"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.alert_content_set.le_context", "true"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.alert_content_set.le_log_link", "true"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.params_set.%", "2"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.params_set.description", updatedTagActionParamSetDescription),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.params_set.service_key", "MY_PD_KEY"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.targets.0.type", "Pagerduty"),
-					resource.TestCheckResourceAttr(tagsResourceStateId, "actions.0.type", "Alert"),
 				),
 			},
 		},

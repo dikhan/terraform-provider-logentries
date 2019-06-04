@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-const logSetsResourceName = "insight_logsets"
+const logSetsResourceName = "insight_logset"
 const logSetsResourceId = "acceptance_logset"
 
 var logSetsResourceStateId = fmt.Sprintf("%s.%s", logSetsResourceName, logSetsResourceId)
@@ -24,24 +24,25 @@ var updatedLogSetDescription = "updated description for the logset"
 func init() {
 
 	configTemplate := `
-	provider "insight" {
+	provider insight {
 	  api_key = "%s"
+	  region  = "%s"
 	}
 
-	resource "%s" "%s" {
+	resource %s %s {
 	  name = "%s"
 	  description = "%s"
 	  logs_info = []
 	  user_data = {}
 	}`
 
-	testLogSetsCreateConfig = fmt.Sprintf(configTemplate, apiKey, logSetsResourceName, logSetsResourceId, createLogSetName, createLogSetDescription)
-	testLogSetsUpdatedConfig = fmt.Sprintf(configTemplate, apiKey, logSetsResourceName, logSetsResourceId, updatedLogSetName, updatedLogSetDescription)
+	testLogSetsCreateConfig = fmt.Sprintf(configTemplate, apiKey, region, logSetsResourceName, logSetsResourceId, createLogSetName, createLogSetDescription)
+	testLogSetsUpdatedConfig = fmt.Sprintf(configTemplate, apiKey, region, logSetsResourceName, logSetsResourceId, updatedLogSetName, updatedLogSetDescription)
 }
 
 func logSetExists() checkExists {
-	return func(leClient insight_goclient.LogEntriesClient, id string) error {
-		_, _, err := leClient.LogSets.GetLogSet(id)
+	return func(client insight_goclient.InsightClient, id string) error {
+		_, err := client.GetLogset(id)
 		return err
 	}
 }

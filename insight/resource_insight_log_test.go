@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-const logsResourceName = "insight_logs"
+const logsResourceName = "insight_log"
 const logsResourceId = "acceptance_log"
 
 var logResourceStateId = fmt.Sprintf("%s.%s", logsResourceName, logsResourceId)
@@ -28,33 +28,33 @@ func init() {
 	configTemplate := `
 	provider "insight" {
 	  api_key = "%s"
-		region  = "eu"
+	  region  = "%s"
 	}
 
-	resource "insight_logsets" "acceptance_logset" {
+	resource insight_logset acceptance_logset {
 	  name = "Acceptance Log Set for log acc tests"
 	  description = "some description goes here"
 	}
 
 	resource "%s" "%s" {
-	  name = "%s"
-	  source_type = "token"
-	  token_seed = ""
-	  structures = []
-	  logsets_info = ["${insight_logsets.acceptance_logset.id}"]
-	  user_data = {
-	    "le_agent_filename" = "%s",
-		"le_agent_follow" = "%s"
-	  }
+	  	name = "%s"
+	  	source_type = "token"
+	  	token_seed = ""
+	  	structures = []
+	  	logsets_info = ["${insight_logset.acceptance_logset.id}"]
+	  	user_data {
+	  		agent_filename = "%s"
+			agent_follow   = "%s"
+	  	}
 	}`
 
-	testLogCreateConfig = fmt.Sprintf(configTemplate, apiKey, logsResourceName, logsResourceId, createLogName, createLogAgentFileName, createLogAgentFollow)
-	testLogUpdatedConfig = fmt.Sprintf(configTemplate, apiKey, logsResourceName, logsResourceId, updatedLogName, updatedLogAgentFileName, updatedLogAgentFollow)
+	testLogCreateConfig = fmt.Sprintf(configTemplate, apiKey, region, logsResourceName, logsResourceId, createLogName, createLogAgentFileName, createLogAgentFollow)
+	testLogUpdatedConfig = fmt.Sprintf(configTemplate, apiKey, region, logsResourceName, logsResourceId, updatedLogName, updatedLogAgentFileName, updatedLogAgentFollow)
 }
 
 func logExists() checkExists {
 	return func(client insight_goclient.InsightClient, id string) error {
-		_, _, err := client.Logs.GetLog(id)
+		_, err := client.GetLog(id)
 		return err
 	}
 }
@@ -71,8 +71,8 @@ func TestAccInsightLog_Create(t *testing.T) {
 					resource.TestCheckResourceAttr(logResourceStateId, "name", createLogName),
 					resource.TestCheckResourceAttr(logResourceStateId, "source_type", "token"),
 					resource.TestCheckResourceAttr(logResourceStateId, "user_data.%", "2"),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.le_agent_filename", createLogAgentFileName),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.le_agent_follow", createLogAgentFollow),
+					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_filename", createLogAgentFileName),
+					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_follow", createLogAgentFollow),
 				),
 			},
 		},
@@ -91,8 +91,8 @@ func TestAccInsightLog_Update(t *testing.T) {
 					resource.TestCheckResourceAttr(logResourceStateId, "name", createLogName),
 					resource.TestCheckResourceAttr(logResourceStateId, "source_type", "token"),
 					resource.TestCheckResourceAttr(logResourceStateId, "user_data.%", "2"),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.le_agent_filename", createLogAgentFileName),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.le_agent_follow", createLogAgentFollow),
+					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_filename", createLogAgentFileName),
+					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_follow", createLogAgentFollow),
 				),
 			},
 			{
@@ -101,8 +101,8 @@ func TestAccInsightLog_Update(t *testing.T) {
 					resource.TestCheckResourceAttr(logResourceStateId, "name", updatedLogName),
 					resource.TestCheckResourceAttr(logResourceStateId, "source_type", "token"),
 					resource.TestCheckResourceAttr(logResourceStateId, "user_data.%", "2"),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.le_agent_filename", updatedLogAgentFileName),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.le_agent_follow", updatedLogAgentFollow),
+					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_filename", updatedLogAgentFileName),
+					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_follow", updatedLogAgentFollow),
 				),
 			},
 		},
