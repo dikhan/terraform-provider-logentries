@@ -40,23 +40,14 @@ func resourceInsightLog() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
-			"user_data": {
-				Type:     schema.TypeSet,
+			"agent_filename": {
+				Type:     schema.TypeString,
 				Optional: true,
-				MaxItems: 1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"agent_filename": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"agent_follow": {
-							Type:     schema.TypeBool,
-							Optional: true,
-							Default:  true,
-						},
-					},
-				},
+			},
+			"agent_follow": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
 			},
 		},
 	}
@@ -130,7 +121,7 @@ func getInsightLogFromData(data *schema.ResourceData) *insight_goclient.Log {
 			logsetIds = append(logsetIds, &insight_goclient.Info{Id: logsetId.(string)})
 		}
 	}
-	log := insight_goclient.Log{
+	return &insight_goclient.Log{
 		Id:          data.Id(),
 		SourceType:  data.Get("source_type").(string),
 		Name:        data.Get("name").(string),
@@ -138,16 +129,11 @@ func getInsightLogFromData(data *schema.ResourceData) *insight_goclient.Log {
 		Tokens:      tokens,
 		Structures:  structures,
 		LogsetsInfo: logsetIds,
+		UserData: &insight_goclient.LogUserData{
+			AgentFileName: data.Get("agent_filename").(string),
+			AgentFollow:   insight_goclient.StringBool(data.Get("agent_follow").(bool)),
+		},
 	}
-	if v, ok := data.GetOk("user_data"); ok {
-		userDataSettingsData := v.(*schema.Set).List()[0]
-		userDataSettings := userDataSettingsData.(map[string]interface{})
-		log.UserData = &insight_goclient.LogUserData{
-			AgentFileName: userDataSettings["agent_filename"].(string),
-			AgentFollow:   insight_goclient.StringBool(userDataSettings["agent_follow"].(bool)),
-		}
-	}
-	return &log
 }
 
 func setInsightLogData(data *schema.ResourceData, log *insight_goclient.Log) error {
@@ -155,15 +141,8 @@ func setInsightLogData(data *schema.ResourceData, log *insight_goclient.Log) err
 	for _, logset := range log.LogsetsInfo {
 		logsets = append(logsets, logset.Id)
 	}
-
-	if log.UserData != nil {
-		userData := map[string]interface{}{
-			"agent_follow":   log.UserData.AgentFollow,
-			"agent_filename": log.UserData.AgentFileName,
-		}
-		data.Set("user_data", []interface{}{userData})
-	}
-
+	data.Set("agent_follow", log.UserData.AgentFollow)
+	data.Set("agent_filename", log.UserData.AgentFileName)
 	data.SetId(log.Id)
 	data.Set("name", log.Name)
 	data.Set("source_type", log.SourceType)

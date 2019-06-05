@@ -42,10 +42,8 @@ func init() {
 	  	token_seed = ""
 	  	structures = []
 	  	logsets_info = ["${insight_logset.acceptance_logset.id}"]
-	  	user_data {
-	  		agent_filename = "%s"
-			agent_follow   = "%s"
-	  	}
+	  	agent_filename = "%s"
+		agent_follow   = "%s"
 	}`
 
 	testLogCreateConfig = fmt.Sprintf(configTemplate, apiKey, region, logsResourceName, logsResourceId, createLogName, createLogAgentFileName, createLogAgentFollow)
@@ -70,9 +68,8 @@ func TestAccInsightLog_Create(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(logResourceStateId, "name", createLogName),
 					resource.TestCheckResourceAttr(logResourceStateId, "source_type", "token"),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.%", "2"),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_filename", createLogAgentFileName),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_follow", createLogAgentFollow),
+					resource.TestCheckResourceAttr(logResourceStateId, "agent_filename", createLogAgentFileName),
+					resource.TestCheckResourceAttr(logResourceStateId, "agent_follow", createLogAgentFollow),
 				),
 			},
 		},
@@ -90,9 +87,8 @@ func TestAccInsightLog_Update(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(logResourceStateId, "name", createLogName),
 					resource.TestCheckResourceAttr(logResourceStateId, "source_type", "token"),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.%", "2"),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_filename", createLogAgentFileName),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_follow", createLogAgentFollow),
+					resource.TestCheckResourceAttr(logResourceStateId, "agent_filename", createLogAgentFileName),
+					resource.TestCheckResourceAttr(logResourceStateId, "agent_follow", createLogAgentFollow),
 				),
 			},
 			{
@@ -100,9 +96,8 @@ func TestAccInsightLog_Update(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(logResourceStateId, "name", updatedLogName),
 					resource.TestCheckResourceAttr(logResourceStateId, "source_type", "token"),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.%", "2"),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_filename", updatedLogAgentFileName),
-					resource.TestCheckResourceAttr(logResourceStateId, "user_data.agent_follow", updatedLogAgentFollow),
+					resource.TestCheckResourceAttr(logResourceStateId, "agent_filename", updatedLogAgentFileName),
+					resource.TestCheckResourceAttr(logResourceStateId, "agent_follow", updatedLogAgentFollow),
 				),
 			},
 		},
