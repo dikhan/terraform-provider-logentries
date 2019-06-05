@@ -23,16 +23,6 @@ func resourceInsightLogset() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"log_ids": {
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-			},
-			"user_data": {
-				Type:     schema.TypeMap,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-			},
 		},
 	}
 }
@@ -87,36 +77,16 @@ func resourceInsightLogsetDelete(data *schema.ResourceData, meta interface{}) er
 }
 
 func getInsightLogsetFromData(data *schema.ResourceData) *insight_goclient.Logset {
-	var logs []*insight_goclient.Info
-	if v, ok := data.GetOk("logs_ids"); ok {
-		for _, id := range v.(*schema.Set).List() {
-			logs = append(logs, &insight_goclient.Info{Id: id.(string)})
-		}
-	}
-	var userData map[string]string
-	if v, ok := data.GetOk("user_data"); ok {
-		for key, value := range v.(map[string]interface{}) {
-			userData[key] = value.(string)
-		}
-	}
 	return &insight_goclient.Logset{
 		Id:          data.Id(),
 		Name:        data.Get("name").(string),
 		Description: data.Get("description").(string),
-		UserData:    userData,
-		LogsInfo:    logs,
 	}
 }
 
 func setInsightLogsetData(data *schema.ResourceData, logset *insight_goclient.Logset) error {
-	var logs []string
-	for _, log := range logset.LogsInfo {
-		logs = append(logs, log.Id)
-	}
 	data.SetId(logset.Id)
 	data.Set("name", logset.Name)
 	data.Set("description", logset.Description)
-	data.Set("user_data", logset.UserData)
-	data.Set("log_ids", logs)
 	return nil
 }
