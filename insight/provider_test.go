@@ -21,10 +21,10 @@ func init() {
 }
 
 func testAccPreCheck(t *testing.T) {
-	if os.Getenv("INGISHT_API_KEY") == "" {
+	if os.Getenv("INSIGHT_API_KEY") == "" {
 		t.Fatalf("err: INSIGHT_API_KEY env variable is mandatory to run acceptance tests")
 	}
-	if os.Getenv("INGISHT_REGION") == "" {
+	if os.Getenv("INSIGHT_REGION") == "" {
 		t.Fatalf("err: INSIGHT_REGION env variable is mandatory to run acceptance tests")
 	}
 }
