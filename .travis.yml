@@ -2,15 +2,20 @@ dist: xenial
 language: go
 
 go:
-  - 1.11.x
+  - 1.12.x
 
 env:
   global:
     - GOARCH=amd64
+    - GO111MODULE=on
+    - GOFLAGS='-mod vendor'
+
+install: true
 
 script:
+  - mkdir vendor/github.com/dikhan
   - export PLUGIN_NAME="${TRAVIS_REPO_SLUG#*/}"
-  - git clone git@github.com:Tweddle-SE-Team/insight_goclient.git ../
+  - git clone git@github.com:Tweddle-SE-Team/insight_goclient.git vendor/github.com/dikhan/
   - go test insight
   - for os in linux darwin windows; do
       export ARTIFACT_NAME="${PLUGIN_NAME}_${TRAVIS_TAG}_${os}_${GOARCH}.zip";
