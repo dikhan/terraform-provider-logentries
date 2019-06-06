@@ -2,7 +2,7 @@ package insight
 
 import (
 	"fmt"
-	"github.com/dikhan/insight_goclient"
+	"github.com/Tweddle-SE-Team/insight_goclient"
 	"github.com/hashicorp/terraform/helper/resource"
 	"testing"
 )

@@ -1,7 +1,7 @@
 package insight
 
 import (
-	"github.com/dikhan/insight_goclient"
+	"github.com/Tweddle-SE-Team/insight_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
