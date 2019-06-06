@@ -19,11 +19,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9365b5268e18f6b3434dbc1598a9434ba1296e4e4957f1c7091f4a3f3b62c3e2"
+  digest = "1:d509259629304df1d35c1c80bb19a65ed4b7737eecbe0707ea211117eca8b18a"
   name = "github.com/Tweddle-SE-Team/insight_goclient"
   packages = ["."]
   pruneopts = "UT"
-  revision = "59b0dc24d4febecd7d6224528a6ddf08e653706f"
+  revision = "a48cb942d28af3b0edf2f650ea3b07056ffa3d94"
 
 [[projects]]
   digest = "1:90afd0cfdffcc3df7855160ee2954cbca286e23c4eb9cb3d075536c9e4e1b04f"
@@ -642,7 +642,7 @@
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "4c4f7f33c9ed00de01c4c741d2177abfcfe19307"
+  revision = "79a91cf218c425e1f4d48cd960839b45dd4d065f"
 
 [[projects]]
   digest = "1:8d8faad6b12a3a4c819a3f9618cb6ee1fa1cfc33253abeeea8b55336721e3405"
