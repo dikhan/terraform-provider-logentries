@@ -10,6 +10,7 @@ env:
 
 script:
   - export PLUGIN_NAME="${TRAVIS_REPO_SLUG#*/}"
+  - git clone git@github.com:Tweddle-SE-Team/insight_goclient.git ../
   - go test insight
   - for os in linux darwin windows; do
       export ARTIFACT_NAME="${PLUGIN_NAME}_${TRAVIS_TAG}_${os}_${GOARCH}.zip";
