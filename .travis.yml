@@ -8,6 +8,7 @@ env:
   global:
     - GOARCH=amd64
     - GO111MODULE=on
+    - GOFLAGS='-mod=vendor'
 
 install: true
 
