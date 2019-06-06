@@ -8,15 +8,17 @@ env:
   global:
     - GOARCH=amd64
     - GO111MODULE=on
+    - INSIGHT_API_KEY=key
+    - INSIGHT_REGION=eu
 
 install: true
 
 script:
   - export PLUGIN_NAME="${TRAVIS_REPO_SLUG#*/}"
-  - go test ./insight
+  - go test -v -mod=vendor ./...
   - for os in linux darwin windows; do
       export ARTIFACT_NAME="${PLUGIN_NAME}_${TRAVIS_TAG}_${os}_${GOARCH}.zip";
-      GOOS=$os go build;
+      GOOS=$os go build ./...;
       zip -r ${ARTIFACT_NAME} ${PLUGIN_NAME}*;
     done
 
