@@ -58,6 +58,11 @@ func resourceInsightLogsetRead(data *schema.ResourceData, meta interface{}) erro
 func resourceInsightLogsetUpdate(data *schema.ResourceData, meta interface{}) error {
 	client := meta.(*insight_goclient.InsightClient)
 	logset := getInsightLogsetFromData(data)
+	logsetInfo, err := client.GetLogset(data.Id())
+	if err != nil {
+		return nil
+	}
+	logset.LogsInfo = logsetInfo.LogsInfo
 	if err := client.PutLogset(logset); err != nil {
 		return err
 	}

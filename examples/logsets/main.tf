@@ -7,6 +7,4 @@ provider insight {
 resource insight_logset my_logset {
   name        = "My Log Set"
   description = "Description about my log set"
-  logs_info   = []
-  user_data   = {}
 }

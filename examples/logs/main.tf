@@ -10,14 +10,9 @@ resource insight_logset my_logset {
 }
 
 resource insight_log my_log {
-  name        = "My super log"
-  source_type = "token"
-  token_seed  = ""
-  structures  = []
-  logset_ids  = ["${insight_logset.my_logset.id}"]
-
-  user_data {
-    agent_filename = "/var/log/anaconda.log"
-    agent_follow   = "true"
-  }
+  name           = "My super log"
+  source_type    = "token"
+  logset_ids     = ["${insight_logset.my_logset.id}"]
+  agent_filename = "/var/log/anaconda.log"
+  agent_follow   = "true"
 }
