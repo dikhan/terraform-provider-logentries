@@ -8,5 +8,5 @@ import (
 func main() {
 	plugin.Serve(
 		&plugin.ServeOpts{
-			ProviderFunc: insight.InsightProvider})
+			ProviderFunc: insight.Provider})
 }
