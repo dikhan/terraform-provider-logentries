@@ -14,10 +14,10 @@ script:
       GOOS=$os go build -mod=vendor .;
       if [ $os = "windows" ]; then
          PLUGIN_FILE=${PLUGIN_NAME}.exe;
-      else 
+      else
          PLUGIN_FILE=${PLUGIN_NAME};
-      fi
-      zip ${ARTIFACT_NAME} ${PLUGIN_FILE}; 
+      fi;
+      zip ${ARTIFACT_NAME} ${PLUGIN_FILE};
     done
 
 deploy:
