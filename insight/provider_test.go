@@ -14,15 +14,9 @@ var testAccProvider *schema.Provider
 var testAccProviders map[string]terraform.ResourceProvider
 
 func init() {
-	testAccProvider = InsightProvider()
+	testAccProvider = Provider().(*schema.Provider)
 	testAccProviders = map[string]terraform.ResourceProvider{
 		"insight": testAccProvider,
-	}
-}
-
-func TestInsightProvider(t *testing.T) {
-	if err := InsightProvider().InternalValidate(); err != nil {
-		t.Fatalf("err: %s", err)
 	}
 }
 

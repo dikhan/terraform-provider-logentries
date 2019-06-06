@@ -46,11 +46,11 @@ func labelExists() checkExists {
 
 func checkDestroy(resourceStateId string, checkExists checkExists) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		leClient := testAccProvider.Meta().(insight_goclient.InsightClient)
+		client := testAccProvider.Meta().(insight_goclient.InsightClient)
 		if len(s.Modules) != 0 {
 			if s.Modules[0].Resources[resourceStateId] != nil {
 				id := s.Modules[0].Resources[resourceStateId].Primary.ID
-				if err := checkExists(leClient, id); err != nil {
+				if err := checkExists(client, id); err != nil {
 					if !strings.Contains(err.Error(), "404 Not Found") {
 						return fmt.Errorf("received an error retrieving resource %s - %s", id, err.Error())
 					}
