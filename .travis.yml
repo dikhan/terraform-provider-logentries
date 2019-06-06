@@ -14,8 +14,8 @@ script:
   - export PLUGIN_NAME="${TRAVIS_REPO_SLUG#*/}"
   - for os in linux darwin windows; do
       export ARTIFACT_NAME="${PLUGIN_NAME}_${TRAVIS_TAG}_${os}_${GOARCH}.zip";
-      GOOS=$os go build -v -mod=vendor ./...;
-      zip -r ${ARTIFACT_NAME} ${PLUGIN_NAME}*;
+      GOOS=$os go build -mod=vendor ./...;
+      ls ${PLUGIN_NAME}* | xargs zip ${ARTIFACT_NAME};
     done
 
 deploy:
