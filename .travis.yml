@@ -1,0 +1,30 @@
+dist: xenial
+language: go
+
+go:
+  - 1.11.x
+
+env:
+  global:
+    - GOARCH=amd64
+
+script:
+  - export PLUGIN_NAME="${TRAVIS_REPO_SLUG#*/}"
+  - go test insight
+  - for os in linux darwin windows; do
+      export ARTIFACT_NAME="${PLUGIN_NAME}_${TRAVIS_TAG}_${os}_${GOARCH}.zip";
+      GOOS=$os go get ./...;
+      GOOS=$os go build .;
+      zip -r ${ARTIFACT_NAME} ${PLUGIN_NAME}*;
+    done
+
+deploy:
+  provider: releases
+  skip-cleanup: true
+  api_key:
+    secure: Atb18ysNS71NJ73palArVmWkOtHeFzJz0z1rR9nzZl7Eed094Hoc6Jlz9C/GvZ6y5Uw3448rAoarmFUw7ga7cEmTSute/EuVdUHUDCei0KzUzKVvaKtEer1gJqHb0CJLIdQDnowFL+RGXs/TJ1hB82WzIuPC4fO0kdFwuy7ZQ/bcvhAin4Cnjb5LuoQmvr2Vw8suUtAbxW1DPf2hf94mBTgj6E8b5jHvZ9p1P6xw/QAqoqpHgaB8oGrN8gBHolZXkYIX8MnHwMeOFhk6Ro3TlFyNnWOLR8JOudJAU5MHVMFwfJiYCtPFyTRn8XcMiUFn0JACxwDpKL8Pypb/2ikLftByc2yyIYZ4xUSQIs3B1ODgzobMa03423QNG7zQcpWclGxGk9ucsaCoGsWDYLSxSKEAZDzgj5kexzSUC3bPqun+ZOqj+TDtGZVJVDp2uteAdfYCG6E98gv6SKQGotdFvRB98wRrEvC3fiyqXaTrqnStZVqfgM+JwnOh1IWIrt8Xc++62M0WSyNrkHs2Y2skRAJjXmdScMoSbYlXIRidHb7jGpCVOA7PvpGzYSstHV8jpj0B6H9l50kyM7s0ZC/j+N4TeNQMYPWMT2IciBGNUqTJegwZ3OFUwmCwBEpJ9+ElUZUWQG3jW7eCJHL9Ba2DWnaBBpTWsPxK9OewSrr0RJw=
+  file_glob: true
+  file: *.zip
+  on:
+    repo: Tweddle-SE-Team/terraform-provider-insight
+    tags: true
