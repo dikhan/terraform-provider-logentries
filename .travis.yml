@@ -2,12 +2,13 @@ dist: xenial
 language: go
 
 go:
-  - 1.11.x
+  - 1.12
 
 env:
-  - GOARCH=amd64
-  - GO111MODULE=on
-  - GOFLAGS='-mod vendor'
+  global:
+    - GOARCH=amd64
+    - GO111MODULE=on
+    - GOFLAGS='-mod vendor'
 
 install: true
 
