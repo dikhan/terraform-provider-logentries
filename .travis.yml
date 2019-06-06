@@ -16,11 +16,10 @@ script:
   - mkdir vendor/github.com/dikhan
   - export PLUGIN_NAME="${TRAVIS_REPO_SLUG#*/}"
   - git clone https://github.com/Tweddle-SE-Team/insight_goclient.git vendor/github.com/dikhan/insight_goclient/
-  - go test insight
+  - go test ./insight
   - for os in linux darwin windows; do
       export ARTIFACT_NAME="${PLUGIN_NAME}_${TRAVIS_TAG}_${os}_${GOARCH}.zip";
-      GOOS=$os go get ./...;
-      GOOS=$os go build .;
+      GOOS=$os go build;
       zip -r ${ARTIFACT_NAME} ${PLUGIN_NAME}*;
     done
 
