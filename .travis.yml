@@ -13,6 +13,7 @@ script:
       export ARTIFACT_NAME="${PLUGIN_NAME}_${TRAVIS_TAG}_${os}_${GOARCH}.zip";
       GOOS=$os go build -mod=vendor .;
       ls ${PLUGIN_NAME}* | xargs zip ${ARTIFACT_NAME};
+      rm -r ${PLUGIN_NAME}*;
     done
 
 deploy:
