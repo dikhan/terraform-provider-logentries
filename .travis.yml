@@ -3,15 +3,12 @@ language: go
 
 go: "1.12.x"
 
-env:
-  global:
-    - GOARCH=amd64
-    - GO111MODULE=on
-
 install: true
 
 script:
   - export PLUGIN_NAME="${TRAVIS_REPO_SLUG#*/}"
+  - export GOARCH=amd64
+  - export GO111MODULE=on
   - for os in linux darwin windows; do
       export ARTIFACT_NAME="${PLUGIN_NAME}_${TRAVIS_TAG}_${os}_${GOARCH}.zip";
       GOOS=$os go build -mod=vendor .;
