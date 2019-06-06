@@ -3,6 +3,7 @@ package insight
 import (
 	"github.com/Tweddle-SE-Team/insight_goclient"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/terraform"
 )
 
 // InsightProvider returns a terraform.ResourceProvider.
