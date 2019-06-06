@@ -12,8 +12,12 @@ script:
   - for os in linux darwin windows; do
       export ARTIFACT_NAME="${PLUGIN_NAME}_${TRAVIS_TAG}_${os}_${GOARCH}.zip";
       GOOS=$os go build -mod=vendor .;
-      ls ${PLUGIN_NAME}* | xargs zip ${ARTIFACT_NAME};
-      rm -r ${PLUGIN_NAME}*;
+      if [ $os = "windows" ]; then
+         PLUGIN_FILE=${PLUGIN_NAME}.exe;
+      else 
+         PLUGIN_FILE=${PLUGIN_NAME};
+      fi
+      zip ${ARTIFACT_NAME} ${PLUGIN_FILE}; 
     done
 
 deploy:
