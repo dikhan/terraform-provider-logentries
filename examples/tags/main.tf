@@ -1,7 +1,8 @@
 # Specify the provider and access details
 provider insight {
-  api_key = "${var.api_key}"
+  api_key = "test"
   region  = "eu"
+  endpoint = "https://insight.free.beeceptor.com"
 }
 
 data insight_label label {
@@ -32,7 +33,7 @@ resource insight_tag my_tag {
   type       = "Alert"
   patterns   = ["[error]"]
   source_ids = ["5a1288ab-561a-4f93-1111-6a38c6d8TEST"]
-  label_ids  = ["${data.insight_label.label.label_id}"]
+  label_ids  = ["${data.insight_label.label.id}"]
 
   action_ids = [
     "${insight_action.alert1.id}",
