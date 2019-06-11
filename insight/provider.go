@@ -53,6 +53,8 @@ func providerConfigure(data *schema.ResourceData) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	client.InsightUrl = data.Get("endpoint").(string)
+	if endpoint, ok := data.GetOk("endpoint"); ok {
+		client.InsightUrl = endpoint.(string)
+	}
 	return client, nil
 }
