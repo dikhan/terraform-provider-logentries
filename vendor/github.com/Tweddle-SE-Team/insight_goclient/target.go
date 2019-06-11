@@ -19,7 +19,7 @@ type Target struct {
 	Type            string                 `json:"type,omitempty"`
 	Name            string                 `json:"name,omitempty"`
 	ParameterSet    *TargetParameterSet    `json:"params_set,omitempty"`
-	UserData        map[string]string      `json:"user_data,omitempty"`
+	UserData        map[string]string      `json:"user_data"`
 	AlertContentSet *TargetAlertContentSet `json:"alert_content_set,omitempty"`
 }
 

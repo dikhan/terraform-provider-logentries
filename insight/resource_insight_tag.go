@@ -123,6 +123,7 @@ func getInsightTagFromData(data *schema.ResourceData) *insight_goclient.Tag {
 		Sources:  sources,
 		Actions:  actions,
 		Labels:   labels,
+		UserData: map[string]string{"product_type": "OPS"},
 	}
 }
 

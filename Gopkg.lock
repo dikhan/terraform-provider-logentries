@@ -19,11 +19,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:70d65e72a71a7928fa9933204b0040535a63b94a2720b3a5aa98d2e99724a7e2"
+  digest = "1:fc6e680eed9ee7b6c684ffd2ac03986599ad2c23cac5d02ed0e92de5270b6f8c"
   name = "github.com/Tweddle-SE-Team/insight_goclient"
   packages = ["."]
   pruneopts = "UT"
-  revision = "b11e3049c57dc744e9528fe3f244290dd396a55d"
+  revision = "de4b76a1a9646815624434981d1519468dd166b1"
 
 [[projects]]
   digest = "1:90afd0cfdffcc3df7855160ee2954cbca286e23c4eb9cb3d075536c9e4e1b04f"

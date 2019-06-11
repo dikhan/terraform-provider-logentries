@@ -17,8 +17,8 @@ const (
 type Label struct {
 	Id       string `json:"id,omitempty"`
 	SN       int    `json:"sn,omitempty"`
-	Name     string `json:"name"`
-	Color    string `json:"color"`
+	Name     string `json:"name,omitempty"`
+	Color    string `json:"color,omitempty"`
 	Reserved bool   `json:"reserved,omitempty"`
 }
 

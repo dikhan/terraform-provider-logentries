@@ -17,13 +17,15 @@ const (
 
 // Tag represents the entity used to get an existing tag from the insight API
 type Tag struct {
-	Id       string    `json:"id,omitempty"`
-	Type     string    `json:"type"`
-	Name     string    `json:"name"`
-	Sources  []*Source `json:"sources"`
-	Actions  []*Action `json:"actions"`
-	Patterns []string  `json:"patterns"`
-	Labels   []*Label  `json:"labels,omitempty"`
+	Id          string            `json:"id,omitempty"`
+	Type        string            `json:"type"`
+	Description string            `json:"description"`
+	Name        string            `json:"name"`
+	Sources     []*Source         `json:"sources"`
+	Actions     []*Action         `json:"actions"`
+	Patterns    []string          `json:"patterns"`
+	Labels      []*Label          `json:"labels,omitempty"`
+	UserData    map[string]string `json:"user_data"`
 }
 
 // source represents the source log associated with the Tag
@@ -31,7 +33,7 @@ type Source struct {
 	Id              string `json:"id"`
 	Name            string `json:"name,omitempty"`
 	RetentionPeriod string `json:"retention_period,omitempty"`
-	StoredDays      []int  `json:"stored_days"`
+	StoredDays      []int  `json:"stored_days,omitempty"`
 }
 
 type Tags struct {
@@ -66,6 +68,9 @@ func (client *InsightClient) GetTag(tagId string) (*Tag, error) {
 
 // PostTag creates a new Tag and Alert
 func (client *InsightClient) PostTag(tag *Tag) error {
+	if tag.UserData == nil {
+		tag.UserData = make(map[string]string)
+	}
 	tagRequest := TagRequest{tag}
 	resp, err := client.post(TAGS_PATH, tagRequest)
 	if err != nil {
@@ -80,6 +85,9 @@ func (client *InsightClient) PostTag(tag *Tag) error {
 
 // PutTag updates an existing Tag and Alert
 func (client *InsightClient) PutTag(tag *Tag) error {
+	if tag.UserData == nil {
+		tag.UserData = make(map[string]string)
+	}
 	tagRequest := TagRequest{tag}
 	endpoint, err := client.getTagEndpoint(tag.Id)
 	if err != nil {

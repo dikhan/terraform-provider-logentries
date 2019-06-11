@@ -16,13 +16,13 @@ const (
 // Action represents the entity used to get an existing action from the insight API
 type Action struct {
 	Id               string    `json:"id,omitempty"`
-	MinMatchesCount  int       `json:"min_matches_count"`
-	MinReportCount   int       `json:"min_report_count"`
-	MinMatchesPeriod string    `json:"min_matches_period"`
-	MinReportPeriod  string    `json:"min_report_period"`
-	Targets          []*Target `json:"targets"`
-	Enabled          bool      `json:"enabled"`
-	Type             string    `json:"type"`
+	MinMatchesCount  int       `json:"min_matches_count,omitempty"`
+	MinReportCount   int       `json:"min_report_count,omitempty"`
+	MinMatchesPeriod string    `json:"min_matches_period,omitempty"`
+	MinReportPeriod  string    `json:"min_report_period,omitempty"`
+	Targets          []*Target `json:"targets,omitempty"`
+	Enabled          bool      `json:"enabled,omitempty"`
+	Type             string    `json:"type,omitempty"`
 }
 
 type ActionRequest struct {
