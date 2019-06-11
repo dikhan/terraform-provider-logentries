@@ -14,16 +14,16 @@
     "storage",
   ]
   pruneopts = "UT"
-  revision = "775730d6e48254a2430366162cf6298e5368833c"
-  version = "v0.39.0"
+  revision = "457ea5c15ccf3b87db582c450e80101989da35f7"
+  version = "v0.40.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:d509259629304df1d35c1c80bb19a65ed4b7737eecbe0707ea211117eca8b18a"
+  digest = "1:70d65e72a71a7928fa9933204b0040535a63b94a2720b3a5aa98d2e99724a7e2"
   name = "github.com/Tweddle-SE-Team/insight_goclient"
   packages = ["."]
   pruneopts = "UT"
-  revision = "a48cb942d28af3b0edf2f650ea3b07056ffa3d94"
+  revision = "b11e3049c57dc744e9528fe3f244290dd396a55d"
 
 [[projects]]
   digest = "1:90afd0cfdffcc3df7855160ee2954cbca286e23c4eb9cb3d075536c9e4e1b04f"
@@ -58,7 +58,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:31f926d918cbcd43a73bfa421bb9dbae146e699203974458938b6493fd8be96d"
+  digest = "1:75ff23c02878c12d796ec3fa6fc0511907b1c67721e81b13517c28bab0628e51"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -98,8 +98,8 @@
     "service/sts",
   ]
   pruneopts = "UT"
-  revision = "eb8216aeaa74d4010569c51ae6238919c172ed82"
-  version = "v1.19.44"
+  revision = "bdafd99f31a0103ec73bcabfc9498aef3252d515"
+  version = "v1.19.47"
 
 [[projects]]
   branch = "master"
@@ -299,7 +299,7 @@
     "hclwrite",
   ]
   pruneopts = "UT"
-  revision = "4b22149b7cef7272799ac85dca150e553d667971"
+  revision = "318e80eefe28c3aa01b434c61bcf4c83a0cc6b25"
 
 [[projects]]
   branch = "master"
@@ -546,7 +546,6 @@
   version = "v4.0.4"
 
 [[projects]]
-  branch = "master"
   digest = "1:08d3d8652ad0bf291ac3bdc05b59595ee0ec4211364ffe88528edef01dca630f"
   name = "github.com/zclconf/go-cty"
   packages = [
@@ -560,7 +559,8 @@
     "cty/set",
   ]
   pruneopts = "UT"
-  revision = "4fecf87372ec204b46eb9e8ff264cdc3cafdccfe"
+  revision = "6fd39ad70c3a6bbdb1b4e47444e4cce72f901200"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:74055050ea547bb04600be79cc501965cb3de8988018262f2ca430f0a0b48ec3"
@@ -607,7 +607,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1b13e8770142a9251361b13a3b8b9b77296be6fa32856c937b346a45f93c845c"
+  digest = "1:2f357867bf425774d35beca5be718402a4488b8b23b1563ce8c5bb91d09285a7"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -620,7 +620,7 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "60506f45cf65977eb3a9c6e30f995f54a721c271"
+  revision = "461777fb6f67e8cb9d70cda16573678d085a74cf"
 
 [[projects]]
   branch = "master"
@@ -638,11 +638,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8f5108406bc43c7669b0d67d282e40d05c9f268615fcaf8c1f0f76965aa3f09f"
+  digest = "1:010311506e3917b54487c35a4277e2709678a40c1587d82492c40b78b6a0a01d"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "79a91cf218c425e1f4d48cd960839b45dd4d065f"
+  revision = "93c9922d18aeb82498a065f07aec7ad7fa60dfb7"
 
 [[projects]]
   digest = "1:8d8faad6b12a3a4c819a3f9618cb6ee1fa1cfc33253abeeea8b55336721e3405"
@@ -685,11 +685,11 @@
     "transport/http/internal/propagation",
   ]
   pruneopts = "UT"
-  revision = "721295fe20d585ce7e948146f82188429d14da33"
-  version = "v0.5.0"
+  revision = "aac82e61c0c8fe133c297b4b59316b9f481e1f0a"
+  version = "v0.6.0"
 
 [[projects]]
-  digest = "1:682eceac662719c843bab910f932a9db9526980b911f48dd213867c653b9e511"
+  digest = "1:aab5961ce178ac5006b1c2d52214a0d22a49589eb986d6769e1c93e95301f0d4"
   name = "google.golang.org/appengine"
   packages = [
     ".",
@@ -707,8 +707,8 @@
     "urlfetch",
   ]
   pruneopts = "UT"
-  revision = "4c25cacc810c02874000e4f7071286a8e96b2515"
-  version = "v1.6.0"
+  revision = "b2f4a3cf3c67576a2ee09e1fe62656a5086ce880"
+  version = "v1.6.1"
 
 [[projects]]
   branch = "master"

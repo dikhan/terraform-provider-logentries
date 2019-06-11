@@ -68,6 +68,19 @@ func (client *InsightClient) GetLogset(logsetId string) (*Logset, error) {
 	return logsetRequest.Logset, nil
 }
 
+func (client *InsightClient) GetLogsetByName(name string) (*Logset, error) {
+	logsets, err := client.GetLogsets()
+	if err != nil {
+		return nil, err
+	}
+	for _, logset := range logsets {
+		if logset.Name == name {
+			return logset, nil
+		}
+	}
+	return nil, fmt.Errorf("No logset with name %s doesn't exist", name)
+}
+
 // PostLogset creates a new LogSet
 func (client *InsightClient) PostLogset(logset *Logset) error {
 	logsetRequest := LogsetRequest{logset}

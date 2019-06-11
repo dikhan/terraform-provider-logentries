@@ -20,13 +20,19 @@ func Provider() terraform.ResourceProvider {
 			"region": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("INSIGHT_REGION", nil),
 				Description: "Region for Insight REST API",
 			},
+			"endpoint": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("INSIGHT_ENDPOINT", nil),
+				Description: "Custom Insight REST API Endpoint",
+			},
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"insight_label": dataSourceInsightLabel(),
+			"insight_label":  dataSourceInsightLabel(),
+			"insight_logset": dataSourceInsightLogset(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"insight_tag":    resourceInsightTag(),
@@ -40,12 +46,13 @@ func Provider() terraform.ResourceProvider {
 	}
 }
 
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	apiKey := d.Get("api_key").(string)
-	region := d.Get("region").(string)
+func providerConfigure(data *schema.ResourceData) (interface{}, error) {
+	apiKey := data.Get("api_key").(string)
+	region := data.Get("region").(string)
 	client, err := insight_goclient.NewInsightClient(apiKey, region)
 	if err != nil {
 		return nil, err
 	}
+	client.InsightUrl = data.Get("endpoint").(string)
 	return client, nil
 }

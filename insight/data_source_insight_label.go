@@ -18,10 +18,6 @@ func dataSourceInsightLabel() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"label_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 		},
 	}
 }
@@ -42,6 +38,5 @@ func dataSourceLabelRead(data *schema.ResourceData, meta interface{}) error {
 	}
 	data.SetId(labels[0].Id)
 	data.Set("color", labels[0].Color)
-	data.Set("label_id", labels[0].Id)
 	return nil
 }
