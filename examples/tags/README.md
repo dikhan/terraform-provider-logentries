@@ -1,12 +1,12 @@
-# Logentries - Resource Tags example
+# Insight - Resource Tags example
 
-This example shows how to manage tags in logentries via terraform.
+This example shows how to manage tags in insight via terraform.
 
 This example would create a new tag associated with the sources logs specified in the sources param and the appropriate labels
 configured will be attached to the tag. Make sure that the values introduced for the log source as well as the labels exist
-in your logentries account.
+in your insight account.
 
-Logentries resource expect the var.api_key to be passed in as env variable. Also. in this specific example as we are 
+Insight resource expect the var.api_key to be passed in as env variable. Also. in this specific example as we are
 creating a PagerDuty alert for the tag, an env variable PD_KEY is passed to terraform commands.
 
 ## Running the example
@@ -16,19 +16,19 @@ creating a PagerDuty alert for the tag, an env variable PD_KEY is passed to terr
 Fist and foremost, build and init terraform
 
 ```
-$ cd $GOPATH/src/github.com/dikhan/terraform-provider-logentries
+$ cd $GOPATH/src/github.com/dikhan/terraform-provider-insight
 $ go install && terraform init
 ```
 
-This will install the binary inside $GOPATH/bin so terraform is aware about the logentries plugin.
+This will install the binary inside $GOPATH/bin so terraform is aware about the insight plugin.
 
 For planning phase execute:
 
 ```
-TF_VAR_api_key="YOUR_API_KEY" TF_VAR_pagerduty_key="YOUR_PD_API_KEY" terraform plan
+TF_VAR_api_key="YOUR_API_KEY" TF_VAR_region="eu" TF_VAR_pagerduty_key="YOUR_PD_API_KEY" terraform plan
 ```
 
-The logging level can be configured by specifying TF_LOG="DEBUG" and pass it into the terraform commands. 
+The logging level can be configured by specifying TF_LOG="DEBUG" and pass it into the terraform commands.
 For more information about debugging in terraform refer to this [link](https://www.terraform.io/docs/internals/debugging.html).
 
 ### Apply Phase
@@ -36,13 +36,13 @@ For more information about debugging in terraform refer to this [link](https://w
 For apply phase execute:
 
 ```
-TF_VAR_api_key="YOUR_API_KEY" TF_VAR_pagerduty_key="YOUR_PD_API_KEY"  terraform apply
+TF_VAR_api_key="YOUR_API_KEY" TF_VAR_region="eu" TF_VAR_pagerduty_key="YOUR_PD_API_KEY"  terraform apply
 ```
 
-Upon successful apply completion, go ahead and check that the tag actually exist in logentries:
+Upon successful apply completion, go ahead and check that the tag actually exist in insight:
 
 ```
-curl https://rest.logentries.com/management/tags/<NEW_TAG_ID> -H "x-api-key: <YOUR_API_KEY>" -vv
+curl https://REGION.rest.logs.insight.rapid7.com/management/tags/<NEW_TAG_ID> -H "x-api-key: <YOUR_API_KEY>" -vv
 ```
 
 ### Destroy Phase
@@ -50,6 +50,5 @@ curl https://rest.logentries.com/management/tags/<NEW_TAG_ID> -H "x-api-key: <YO
 To remove the newly created tag (this can be found inside the state file - terraform.tfstate), execute:
 
 ```
-TF_VAR_api_key="YOUR_API_KEY" TF_VAR_pagerduty_key="YOUR_PD_API_KEY"  terraform destroy
+TF_VAR_api_key="YOUR_API_KEY" TF_VAR_region="eu" TF_VAR_pagerduty_key="YOUR_PD_API_KEY"  terraform destroy
 ```
-

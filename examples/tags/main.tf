@@ -1,44 +1,41 @@
 # Specify the provider and access details
-provider logentries {
-  api_key = "${var.api_key}"
+provider insight {
+  api_key = "test"
+  region  = "eu"
+  endpoint = "https://insight.free.beeceptor.com"
 }
 
-data logentries_labels label {
+data insight_label label {
   name  = "Critical"
   color = "e0e000"
 }
 
-resource logentries_tags my_tag {
-  name     = "My App Failures"
-  type     = "Alert"
-  patterns = ["[error]"]
-  sources  = ["5a1288ab-561a-4f93-1111-6a38c6d8TEST"]
-  labels   = ["${data.logentries_labels.label.label_id}"]
+resource insight_action alert1 {
+  type               = "Alert"
+  enabled            = true
+  min_matches_count  = 1
+  min_matches_period = "Hour"
+  min_report_count   = 1
+  min_report_period  = "Hour"
 
-  actions = [
-    {
-      type               = "Alert"
-      enabled            = true
-      min_matches_count  = 1
-      min_matches_period = "Hour"
-      min_report_count   = 1
-      min_report_period  = "Hour"
+  target_ids = [
+    "${insight_target.pagerduty.id}",
+  ]
+}
 
-      targets = [
-        {
-          type = "Pagerduty"
+resource insight_target pagerduty {
+  name = "pgdt"
+  pagerduty_service_key = "asdasdasdasd"
+}
 
-          alert_content_set = {
-            le_context  = "true"
-            le_log_link = "true"
-          }
+resource insight_tag my_tag {
+  name       = "My App Failures"
+  type       = "Alert"
+  patterns   = ["[error]"]
+  source_ids = ["5a1288ab-561a-4f93-1111-6a38c6d8TEST"]
+  label_ids  = ["${data.insight_label.label.id}"]
 
-          params_set {
-            description = "Log Error"
-            service_key = "${var.pagerduty_key}"
-          }
-        },
-      ]
-    },
+  action_ids = [
+    "${insight_action.alert1.id}",
   ]
 }

@@ -1,11 +1,10 @@
 # Specify the provider and access details
-provider logentries {
+provider insight {
   api_key = "${var.api_key}"
+  region  = "eu"
 }
 
-resource logentries_logsets my_logset {
+resource insight_logset my_logset {
   name        = "My Log Set"
   description = "Description about my log set"
-  logs_info   = []
-  user_data   = {}
 }
